@@ -728,9 +728,11 @@ def generate_video_8_pickle(datalists=None):
                     fff.append(landmark_frame)
                 else:
                     flage = False
-                if flage and len(fff) == 8:
+                print len(fff)
+                if flage == True and len(fff) == 28:
                     temp.append(fff)
                     fff= []
+                    print '+++'
             
 
         print len(temp)
