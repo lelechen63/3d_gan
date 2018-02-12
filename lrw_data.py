@@ -729,7 +729,7 @@ def generate_video_8_pickle(datalists=None):
                 else:
                     flage = False
                 print len(fff)
-                if flage == True and len(fff) == 28:
+                if flage == True and len(fff) == 24:
                     temp.append(fff)
                     fff= []
                     print '+++'
