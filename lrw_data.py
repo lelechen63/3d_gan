@@ -700,7 +700,7 @@ def generate_video_pickle(datalists=None):
         pickle.dump(data[1], handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-def generate_video_pickle_8(datalists=None):
+def generate_video_8_pickle(datalists=None):
     data = []
     for dataset in datalists:
         temp = []
