@@ -43,7 +43,7 @@ class Generator(nn.Module):
                  nn.ReLU(True)]
 
 
-        # n_downsampling = 3
+        n_downsampling = 3
         # for i in range(n_downsampling):
         #     mult = 2**i
         #     model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3,
