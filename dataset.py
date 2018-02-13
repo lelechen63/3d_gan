@@ -90,7 +90,7 @@ class LRWdataset1D_3d(data.Dataset):
                         wrong_lmss[0,i*4:(i+1) * 4,:] =  wrong_lms
 
                     example_image = right_imgs[0]
-                    example_landmark = right_landmarks[0]
+                    # example_landmark = right_landmarks[0]
                     example_lms = right_lmss[0]
 
                     # return  example_landmark, example_lms,right_landmarks, right_lmss
