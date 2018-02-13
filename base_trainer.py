@@ -155,17 +155,17 @@ class Trainer():
                     steps_remain = num_steps_per_epoch-step+1 + \
                         (config.max_epochs-epoch+1)*num_steps_per_epoch
                     eta = int((t2-t1)*steps_remain)
-                    if config.perceptual:
-                        print("[{}/{}][{}/{}]   Loss_G: {:.4f}, loss_perceptual: {:.4f}  ETA: {} second"
-                              .format(epoch+1, config.max_epochs,
-                                      step+1, num_steps_per_epoch, loss_gen.data[0], loss_perc.data[0],  eta))
-                        log_value('generator_loss',loss_gen.data[0] , step + num_steps_per_epoch * epoch)
-                    else:
+                    # if config.perceptual:
+                    #     print("[{}/{}][{}/{}]   Loss_G: {:.4f}, loss_perceptual: {:.4f}  ETA: {} second"
+                    #           .format(epoch+1, config.max_epochs,
+                    #                   step+1, num_steps_per_epoch, loss_gen.data[0], loss_perc.data[0],  eta))
+                    #     log_value('generator_loss',loss_gen.data[0] , step + num_steps_per_epoch * epoch)
+                    # else:
 
-                        print("[{}/{}][{}/{}]   Loss_G: {:.4f},  ETA: {} second"
-                              .format(epoch+1, config.max_epochs,
-                                      step+1, num_steps_per_epoch, loss_gen.data[0],  eta))
-                        log_value('generator_loss',loss_gen.data[0] , step + num_steps_per_epoch * epoch)
+                    print("[{}/{}][{}/{}]   Loss_G: {:.4f},  ETA: {} second"
+                          .format(epoch+1, config.max_epochs,
+                                  step+1, num_steps_per_epoch, loss_gen.data[0],  eta))
+                    # log_value('generator_loss',loss_gen.data[0] , step + num_steps_per_epoch * epoch)
                 if (step ) % (num_steps_per_epoch/50) == 0 :
                     fake_store = fake_im.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*16,3,128,128)
                     torchvision.utils.save_image(fake_store,
