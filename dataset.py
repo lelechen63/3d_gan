@@ -47,15 +47,15 @@ class LRWdataset1D_3d(data.Dataset):
                     wrong_index = random.choice(
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
-                    right_imgs = torch.FloatTensor(8,128,128,3)
-                    right_lmss = torch.FloatTensor(1,32,128)
+                    right_imgs = torch.FloatTensor(16,128,128,3)
+                    right_lmss = torch.FloatTensor(1,64,128)
                     # right_landmarks = torch.FloatTensor(8,68,2)
 
-                    wrong_imgs = torch.FloatTensor(8,128,128,3)
-                    wrong_lmss = torch.FloatTensor(1, 32,128)
+                    wrong_imgs = torch.FloatTensor(16,128,128,3)
+                    wrong_lmss = torch.FloatTensor(1, 64,128)
                     # wrong_landmark = torch.FloatTensor(8,68,2)
 
-                    for i in  range(0,8):
+                    for i in  range(0,16):
                         image_path = self.train_data[index][i*3]
                         lms_path = self.train_data[index][1 + i*3]
                         # landmark_path = self.train_data[index][2 + i*3]
@@ -114,15 +114,15 @@ class LRWdataset1D_3d(data.Dataset):
                     wrong_index = random.choice(
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
-                    right_imgs = torch.FloatTensor(8,128,128,3)
-                    right_lmss = torch.FloatTensor(1,32,128)
+                    right_imgs = torch.FloatTensor(16,128,128,3)
+                    right_lmss = torch.FloatTensor(1,64,128)
                     # right_landmarks = torch.FloatTensor(8,68,2)
 
-                    wrong_imgs = torch.FloatTensor(8,128,128,3)
-                    wrong_lmss = torch.FloatTensor(1,32,128)
+                    wrong_imgs = torch.FloatTensor(16,128,128,3)
+                    wrong_lmss = torch.FloatTensor(1,64,128)
                     # wrong_landmark = torch.FloatTensor(8,68,2)
 
-                    for i in  range(0,8):
+                    for i in  range(0,16):
                         image_path = self.train_data[index][i*3]
                         lms_path = self.test_data[index][1 + i*3]
                         landmark_path = self.test_data[index][2 + i*3]

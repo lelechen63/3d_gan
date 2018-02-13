@@ -23,11 +23,11 @@ class Generator(nn.Module):
 
         self.audio_extractor = nn.Sequential(
             conv2d(1,32,3,1,1),
-            conv2d(32,64,3,(1,2),1), #32,64
+            conv2d(32,64,3,(1,2),1), #64,64
             # nn.MaxPool2d((1,2),(1,2)), # 16,32
             conv2d(64,128,3,1,1), 
-            conv2d(128,256,3,2,1), # 16,32 
-            conv2d(256,512,3,2,1), # 8,16
+            conv2d(128,256,3,2,1), # 32,32 
+            conv2d(256,512,3,2,1), # 16,16
 
             # conv2d(256,512,3,2,1), # 8,8
             # nn.MaxPool2d((1,2),(1,2)) # 4,4
@@ -86,12 +86,13 @@ class Generator(nn.Module):
         self.generator = nn.Sequential(*model)
 
     def forward(self, input, audio):
-        image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,8,1,1)
+        image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,16,1,1)
         audio_feature = self.audio_extractor(audio).unsqueeze(-1).repeat(1,1,1,1,image_feature.size(-1))
         new_input = image_feature + audio_feature
         # new_input = torch.cat([image_feature,audio_feature],1)
         # out = self.compress(new_input)
         out = self.generator(new_input)
+        print out.size()
 
         return out
 
