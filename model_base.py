@@ -84,6 +84,8 @@ class Generator(nn.Module):
         self.generator = nn.Sequential(*model)
 
     def forward(self, input, audio):
+        print input.size()
+        print '======'
         image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,audio.size(2)/4,1,1)
         audio_feature = self.audio_extractor(audio).unsqueeze(-1).repeat(1,1,1,1,image_feature.size(-1))
         new_input = image_feature + audio_feature
