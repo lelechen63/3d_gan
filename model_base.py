@@ -93,7 +93,8 @@ class Generator(nn.Module):
         new_input = image_feature + audio_feature
         # new_input = torch.cat([image_feature,audio_feature],1)
         # out = self.compress(new_input)
-        out = self.generator(out)
+        out = self.generator(new_input)
+        print out.size()
 
         return out
 
