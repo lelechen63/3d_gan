@@ -21,11 +21,11 @@ class LRWdataset1D_3d(data.Dataset):
             raise ValueError("[*] output_shape must be [H,W] or [C,H,W]")
 
         if self.train=='train':
-            _file = open(os.path.join(dataset_dir, "new_video_8_train.pkl"), "rb")
+            _file = open(os.path.join(dataset_dir, "new_video_16_train.pkl"), "rb")
             self.train_data = pickle.load(_file)
             _file.close()
         elif self.train =='test':
-            _file = open(os.path.join(dataset_dir, "new_video_8_test.pkl"), "rb")
+            _file = open(os.path.join(dataset_dir, "new_video_16_test.pkl"), "rb")
             self.test_data = pickle.load(_file)
             _file.close()
         elif self.train =='demo' :
@@ -56,12 +56,12 @@ class LRWdataset1D_3d(data.Dataset):
                     # wrong_landmark = torch.FloatTensor(8,68,2)
 
                     for i in  range(0,16):
-                        print '======'
-                        print index
-                        print i*3
-                        print len(self.train_data)
-                        print len(self.train_data[index])
-                        print '+++++++++++++++++'
+                        # print '======'
+                        # print index
+                        # print i*3
+                        # print len(self.train_data)
+                        # print len(self.train_data[index])
+                        # print '+++++++++++++++++'
 
                         image_path = self.train_data[index][i*3]
                         lms_path = self.train_data[index][1 + i*3]
