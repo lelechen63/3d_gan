@@ -39,7 +39,7 @@ class Generator(nn.Module):
         model = [nn.ReflectionPad2d(3),
                  nn.Conv2d(3, ngf, kernel_size=7, padding=0,
                            bias=use_bias),
-                 # norm_layer(ngf),
+                 norm_layer(ngf),
                  nn.ReLU(True)]
 
 
