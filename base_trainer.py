@@ -215,7 +215,7 @@ def parse_args():
                         default=100)
     parser.add_argument("--batch_size",
                         type=int,
-                        default=1)
+                        default=64)
     parser.add_argument("--noise_size",
                         type=int,
                         default=0)
