@@ -170,7 +170,7 @@ class Trainer():
                     fake_store = fake_im.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*8,3,128,128)
                     torchvision.utils.save_image(fake_store,
                         "{}fake_{}.png".format(config.sample_dir,cc),normalize=True)
-                    real_store = real_im.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*8,3,128,128)
+                    real_store = right_imgs.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*8,3,128,128)
                     torchvision.utils.save_image(real_store,
                         "{}real_{}.png".format(config.sample_dir,cc),normalize=True)
                     cc += 1
