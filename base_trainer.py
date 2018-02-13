@@ -11,7 +11,7 @@ from torch.nn.modules.module import _addindent
 import numpy as np
 
 from dataset import  LRWdataset1D_3d as LRWdataset
-from lstm_gan import Generator, Discriminator
+from model_base import Generator, Discriminator
 from tensorboard_logger import configure, log_value
 from embedding import Encoder
 class Trainer():
