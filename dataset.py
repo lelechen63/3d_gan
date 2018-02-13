@@ -47,11 +47,11 @@ class LRWdataset1D_3d(data.Dataset):
                     wrong_index = random.choice(
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
-                    right_imgs = torch.FloatTensor(16,128,128,3)
+                    right_imgs = torch.FloatTensor(16,3,128,128)
                     right_lmss = torch.FloatTensor(1,64,128)
                     # right_landmarks = torch.FloatTensor(8,68,2)
 
-                    wrong_imgs = torch.FloatTensor(16,128,128,3)
+                    wrong_imgs = torch.FloatTensor(16,3,128,128)
                     wrong_lmss = torch.FloatTensor(1, 64,128)
                     # wrong_landmark = torch.FloatTensor(8,68,2)
 
@@ -66,11 +66,13 @@ class LRWdataset1D_3d(data.Dataset):
                         image_path = self.train_data[index][i*3]
                         lms_path = self.train_data[index][1 + i*3]
                         # landmark_path = self.train_data[index][2 + i*3]
-                        im = cv2.imread(image_path)
-                        if im is None:
-                            raise IOError
-                        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-                        im = cv2.resize(im, self.output_shape)
+                        # im = cv2.imread(image_path)
+                        # if im is None:
+                        #     raise IOError
+
+                        # im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                        im = Image.open(image_path).convert("RGB").resize(self.output_shape)
+                        # im = cv2.resize(im, self.output_shape)
                         im = self.transform(im)
                         right_img = torch.FloatTensor(im)
                         # right_landmark = torch.FloatTensor(np.load(landmark_path))
@@ -83,11 +85,13 @@ class LRWdataset1D_3d(data.Dataset):
                         image_path = self.train_data[wrong_index][i*3]
                         lms_path = self.train_data[wrong_index][1 + i*3]
                         # landmark_path = self.train_data[wrong_index][2 + i*3]
-                        im = cv2.imread(image_path)
-                        if im is None:
-                            raise IOError
-                        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-                        im = cv2.resize(im, self.output_shape)
+                        # im = cv2.imread(image_path)
+                        # if im is None:
+                        #     raise IOError
+                        # im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                        # im = cv2.resize(im, self.output_shape)
+                        im = Image.open(image_path).convert("RGB").resize(self.output_shape)
+
                         im = self.transform(im)
                         wrong_img = torch.FloatTensor(im)
                         # wrong_landmark = torch.FloatTensor(np.load(landmark_path))
@@ -103,9 +107,9 @@ class LRWdataset1D_3d(data.Dataset):
                     # return  example_landmark, example_lms,right_landmarks, right_lmss
                   
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss
-                    right_imgs = right_imgs.permute(3,0,1,2)
-                    wrong_imgs = wrong_imgs.permute(3,0,1,2)
-                    example_image = example_image.permute(2,0,1)
+                    right_imgs = right_imgs.permute(1,0,2,3)
+                    wrong_imgs = wrong_imgs.permute(1,0,2,3)
+                    example_image = example_image.permute(1,0,2)
 
                     return example_image, example_lms, right_imgs, right_lmss, wrong_imgs,wrong_lmss
 
@@ -121,11 +125,11 @@ class LRWdataset1D_3d(data.Dataset):
                     wrong_index = random.choice(
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
-                    right_imgs = torch.FloatTensor(16,128,128,3)
+                    right_imgs = torch.FloatTensor(16,3,128,128)
                     right_lmss = torch.FloatTensor(1,64,128)
                     # right_landmarks = torch.FloatTensor(8,68,2)
 
-                    wrong_imgs = torch.FloatTensor(16,128,128,3)
+                    wrong_imgs = torch.FloatTensor(16,3,128,128)
                     wrong_lmss = torch.FloatTensor(1,64,128)
                     # wrong_landmark = torch.FloatTensor(8,68,2)
 
@@ -133,11 +137,13 @@ class LRWdataset1D_3d(data.Dataset):
                         image_path = self.train_data[index][i*3]
                         lms_path = self.test_data[index][1 + i*3]
                         landmark_path = self.test_data[index][2 + i*3]
-                        im = cv2.imread(image_path)
-                        if im is None:
-                            raise IOError
-                        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-                        im = cv2.resize(im, self.output_shape)
+                        # im = cv2.imread(image_path)
+                        # if im is None:
+                        #     raise IOError
+                        # im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                        # im = cv2.resize(im, self.output_shape)
+                        im = Image.open(image_path).convert("RGB").resize(self.output_shape)
+
                         im = self.transform(im)
                         right_img = torch.FloatTensor(im)
                         # right_landmark = torch.FloatTensor(np.load(landmark_path))
@@ -150,11 +156,13 @@ class LRWdataset1D_3d(data.Dataset):
                         image_path = self.train_data[wrong_index][i*3]
                         lms_path = self.train_data[wrong_index][1 + i*3]
                         # landmark_path = self.train_data[wrong_index][2 + i*3]
-                        im = cv2.imread(image_path)
-                        if im is None:
-                            raise IOError
-                        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-                        im = cv2.resize(im, self.output_shape)
+                        # im = cv2.imread(image_path)
+                        # if im is None:
+                        #     raise IOError
+                        # im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                        # im = cv2.resize(im, self.output_shape)
+                        im = Image.open(image_path).convert("RGB").resize(self.output_shape)
+
                         im = self.transform(im)
                         wrong_img = torch.FloatTensor(im)
                         # wrong_landmark = torch.FloatTensor(np.load(landmark_path))
@@ -169,10 +177,9 @@ class LRWdataset1D_3d(data.Dataset):
                     
                     # return  example_landmark, example_lms,right_landmarks, right_lmss
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss
-                    right_imgs = right_imgs.permute(3,0,1,2)
-                    wrong_imgs = wrong_imgs.permute(3,0,1,2)
-
-                    example_image = example_image.permute(2,0,1)
+                    right_imgs = right_imgs.permute(1,0,2,3)
+                    wrong_imgs = wrong_imgs.permute(1,0,2,3)
+                    example_image = example_image.permute(1,0,2)
                     return example_image, example_lms, right_imgs, right_lmss, wrong_imgs, wrong_lmss
                    
 
