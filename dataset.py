@@ -61,6 +61,7 @@ class LRWdataset1D_3d(data.Dataset):
                         print i*3
                         print len(self.train_data)
                         print len(self.train_data[index])
+                        print '+++++++++++++++++'
 
                         image_path = self.train_data[index][i*3]
                         lms_path = self.train_data[index][1 + i*3]
