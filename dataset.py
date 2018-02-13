@@ -21,11 +21,11 @@ class LRWdataset1D_3d(data.Dataset):
             raise ValueError("[*] output_shape must be [H,W] or [C,H,W]")
 
         if self.train=='train':
-            _file = open(os.path.join(dataset_dir, "new_video_train.pkl"), "rb")
+            _file = open(os.path.join(dataset_dir, "new_video_8_train.pkl"), "rb")
             self.train_data = pickle.load(_file)
             _file.close()
         elif self.train =='test':
-            _file = open(os.path.join(dataset_dir, "new_video_test.pkl"), "rb")
+            _file = open(os.path.join(dataset_dir, "new_video_8_test.pkl"), "rb")
             self.test_data = pickle.load(_file)
             _file.close()
         elif self.train =='demo' :
