@@ -86,7 +86,7 @@ class Generator(nn.Module):
     def forward(self, input, audio):
         print input.size()
         print '======'
-        image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,audio.size(2)/4,1,1)
+        image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,audio.size(2)/2,1,1)
         print image_feature.size()
         audio_feature = self.audio_extractor(audio).unsqueeze(-1).repeat(1,1,1,1,image_feature.size(-1))
         print audio_feature.size()
