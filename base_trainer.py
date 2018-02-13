@@ -13,12 +13,12 @@ import numpy as np
 from dataset import  LRWdataset1D_3d as LRWdataset
 from model_base import Generator, Discriminator
 from tensorboard_logger import configure, log_value
-from embedding import Encoder
+# from embedding import Encoder
 class Trainer():
     def __init__(self, config):
         self.generator =  Generator(config.cuda)
         self.discriminator =  Discriminator(config.cuda)
-        self.encoder = Encoder()
+        # self.encoder = Encoder()
         # if config.perceptual:
         #     self.encoder.load_state_dict(torch.load('/mnt/disk1/dat/lchen63/lrw/model/embedding/encoder3_0.pth'))
         #     for param in self.encoder.parameters():
@@ -65,7 +65,7 @@ class Trainer():
             device_ids = [int(i) for i in config.device_ids.split(',')]
             self.generator     = self.generator.cuda()
             self.discriminator = self.discriminator.cuda()
-            self.encoder = self.encoder.cuda()
+            # self.encoder = self.encoder.cuda()
             self.bce_loss_fn   = self.bce_loss_fn.cuda()
             self.mse_loss_fn   = self.mse_loss_fn.cuda()
             self.ones          = self.ones.cuda()
