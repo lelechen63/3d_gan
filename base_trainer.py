@@ -17,7 +17,7 @@ from tensorboard_logger import configure, log_value
 class Trainer():
     def __init__(self, config):
         self.generator =  Generator(config.cuda)
-        self.discriminator =  Discriminator(config.cuda)
+        # self.discriminator =  Discriminator(config.cuda)
         # self.encoder = Encoder()
         # if config.perceptual:
         #     self.encoder.load_state_dict(torch.load('/mnt/disk1/dat/lchen63/lrw/model/embedding/encoder3_0.pth'))
@@ -64,7 +64,7 @@ class Trainer():
         if config.cuda:
             device_ids = [int(i) for i in config.device_ids.split(',')]
             self.generator     = self.generator.cuda()
-            self.discriminator = self.discriminator.cuda()
+            # self.discriminator = self.discriminator.cuda()
             # self.encoder = self.encoder.cuda()
             self.bce_loss_fn   = self.bce_loss_fn.cuda()
             self.mse_loss_fn   = self.mse_loss_fn.cuda()
