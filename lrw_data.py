@@ -714,6 +714,7 @@ def generate_video_16_pickle(datalists=None):
             fff = []
 
             for  current_frame_id in xrange(1,30,8):
+                fff= []
 
                 for inx in range(16):
                 
@@ -733,7 +734,6 @@ def generate_video_16_pickle(datalists=None):
                 print len(fff)
                 if flage == True and len(fff) == 48:
                     temp.append(fff)
-                    fff= []
                     print '+++'
             
 
