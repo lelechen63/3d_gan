@@ -26,8 +26,10 @@ class Generator(nn.Module):
             conv2d(32,64,3,(1,2),1), #32,64
             # nn.MaxPool2d((1,2),(1,2)), # 16,32
             conv2d(64,128,3,1,1), 
-            conv2d(128,256,3,(1,2),1), # 32,32 
-            conv2d(256,512,3,2,1), # 16,16
+            conv2d(128,256,3,2,1), # 16,32 
+            conv2d(256,256,3,2,1), # 8,16
+
+            # conv2d(256,512,3,2,1), # 8,8
             # nn.MaxPool2d((1,2),(1,2)) # 4,4
         )
 
@@ -86,7 +88,7 @@ class Generator(nn.Module):
     def forward(self, input, audio):
         print input.size()
         print '======'
-        image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,audio.size(2)/2,1,1)
+        image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,8,1,1)
         print image_feature.size()
         audio_feature = self.audio_extractor(audio).unsqueeze(-1).repeat(1,1,1,1,image_feature.size(-1))
         print audio_feature.size()
