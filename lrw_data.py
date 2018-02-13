@@ -730,11 +730,11 @@ def generate_video_16_pickle(datalists=None):
                         fff.append(landmark_frame)
                     else:
                         flage = False
-                    print len(fff)
-                    if flage == True and len(fff) == 48:
-                        temp.append(fff)
-                        fff= []
-                        print '+++'
+                print len(fff)
+                if flage == True and len(fff) == 48:
+                    temp.append(fff)
+                    fff= []
+                    print '+++'
             
 
         print len(temp)
