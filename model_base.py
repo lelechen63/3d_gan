@@ -86,17 +86,12 @@ class Generator(nn.Module):
         self.generator = nn.Sequential(*model)
 
     def forward(self, input, audio):
-        print input.size()
-        print '======'
         image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,8,1,1)
-        print image_feature.size()
         audio_feature = self.audio_extractor(audio).unsqueeze(-1).repeat(1,1,1,1,image_feature.size(-1))
-        print audio_feature.size()
         new_input = image_feature + audio_feature
         # new_input = torch.cat([image_feature,audio_feature],1)
         # out = self.compress(new_input)
         out = self.generator(new_input)
-        print out.size()
 
         return out
 
