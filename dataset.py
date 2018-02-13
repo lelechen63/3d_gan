@@ -109,7 +109,7 @@ class LRWdataset1D_3d(data.Dataset):
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss
                     right_imgs = right_imgs.permute(1,0,2,3)
                     wrong_imgs = wrong_imgs.permute(1,0,2,3)
-                    example_image = example_image.permute(1,0,2)
+                    # example_image = example_image.permute(1,0,2)
 
                     return example_image, example_lms, right_imgs, right_lmss, wrong_imgs,wrong_lmss
 
@@ -179,7 +179,7 @@ class LRWdataset1D_3d(data.Dataset):
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss
                     right_imgs = right_imgs.permute(1,0,2,3)
                     wrong_imgs = wrong_imgs.permute(1,0,2,3)
-                    example_image = example_image.permute(1,0,2)
+                    # example_image = example_image.permute(1,0,2)
                     return example_image, example_lms, right_imgs, right_lmss, wrong_imgs, wrong_lmss
                    
 
