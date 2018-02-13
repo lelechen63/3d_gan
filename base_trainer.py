@@ -114,7 +114,7 @@ class Trainer():
                     
                 
 
-                fake_im = self.generator(example_lips, landmarks, example_landmark)
+                fake_im = self.generator(example_image, right_lmss)
 
                
 
