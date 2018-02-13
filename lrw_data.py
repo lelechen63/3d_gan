@@ -700,7 +700,7 @@ def generate_video_pickle(datalists=None):
         pickle.dump(data[1], handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-def generate_video_8_pickle(datalists=None):
+def generate_video_16_pickle(datalists=None):
     data = []
     for dataset in datalists:
         temp = []
@@ -713,26 +713,28 @@ def generate_video_8_pickle(datalists=None):
 
             fff = []
 
-            for  current_frame_id in xrange(1,30):
+            for  current_frame_id in xrange(1,30,8):
+
+                for inx in range(16):
                 
-                landmark_frame = os.path.join(dataset[i],video_id+'_%03d.npy'%current_frame_id)
-                if os.path.isfile(landmark_frame.replace('landmark1d','regions').replace('.npy','.jpg')):
-                    fff.append(landmark_frame.replace('landmark1d','regions').replace('.npy','.jpg'))
-                else:
-                    flage = False
-                if os.path.isfile(landmark_frame.replace('landmark1d','lms')):
-                    fff.append(landmark_frame.replace('landmark1d','lms'))
-                else:
-                    flage = False
-                if os.path.isfile(landmark_frame):
-                    fff.append(landmark_frame)
-                else:
-                    flage = False
-                print len(fff)
-                if flage == True and len(fff) == 24:
-                    temp.append(fff)
-                    fff= []
-                    print '+++'
+                    landmark_frame = os.path.join(dataset[i],video_id + '_%03d.npy'% (current_frame_id + inx))
+                    if os.path.isfile(landmark_frame.replace('landmark1d','regions').replace('.npy','.jpg')):
+                        fff.append(landmark_frame.replace('landmark1d','regions').replace('.npy','.jpg'))
+                    else:
+                        flage = False
+                    if os.path.isfile(landmark_frame.replace('landmark1d','lms')):
+                        fff.append(landmark_frame.replace('landmark1d','lms'))
+                    else:
+                        flage = False
+                    if os.path.isfile(landmark_frame):
+                        fff.append(landmark_frame)
+                    else:
+                        flage = False
+                    print len(fff)
+                    if flage == True and len(fff) == 48:
+                        temp.append(fff)
+                        fff= []
+                        print '+++'
             
 
         print len(temp)
@@ -740,9 +742,9 @@ def generate_video_8_pickle(datalists=None):
     # print data[0][0:3]
     # print len(data[0])
     # print len(data[1])
-    with open(os.path.join(args.root_path,'pickle/new_video_8_train.pkl'), 'wb') as handle:
+    with open(os.path.join(args.root_path,'pickle/new_video_16_train.pkl'), 'wb') as handle:
         pickle.dump(data[0], handle, protocol=pickle.HIGHEST_PROTOCOL)
-    with open(os.path.join(args.root_path,'pickle/new_video_8_test.pkl'), 'wb') as handle:
+    with open(os.path.join(args.root_path,'pickle/new_video_16_test.pkl'), 'wb') as handle:
         pickle.dump(data[1], handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
