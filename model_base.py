@@ -27,7 +27,7 @@ class Generator(nn.Module):
             # nn.MaxPool2d((1,2),(1,2)), # 16,32
             conv2d(64,128,3,1,1), 
             conv2d(128,256,3,(1,2),1), # 32,32 
-            conv2d(128,256,3,2,1), # 16,16
+            conv2d(256,256,3,2,1), # 16,16
             # nn.MaxPool2d((1,2),(1,2)) # 4,4
         )
 
@@ -44,12 +44,12 @@ class Generator(nn.Module):
 
 
         n_downsampling = 3
-        # for i in range(n_downsampling):
-        #     mult = 2**i
-        #     model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3,
-        #                         stride=2, padding=1, bias=use_bias),
-        #               norm_layer(ngf * mult * 2),
-        #               nn.ReLU(True)]
+        for i in range(n_downsampling):
+            mult = 2**i
+            model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3,
+                                stride=2, padding=1, bias=use_bias),
+                      norm_layer(ngf * mult * 2),
+                      nn.ReLU(True)]
 
         self.image_encoder = nn.Sequential(*model)
         
@@ -88,7 +88,8 @@ class Generator(nn.Module):
         print '======'
         image_feature = self.image_encoder(input)#.unsqueeze(2).repeat(1,1,audio.size(2)/4,1,1)
         print image_feature.size()
-        audio_feature = self.audio_extractor(audio).unsqueeze(-1).repeat(1,1,1,1,image_feature.size(-1))
+        audio_feature = self.audio_extractor(audio)#.unsqueeze(-1).repeat(1,1,1,1,image_feature.size(-1))
+        print audio_feature.size()
         new_input = image_feature + audio_feature
         # new_input = torch.cat([image_feature,audio_feature],1)
         # out = self.compress(new_input)
