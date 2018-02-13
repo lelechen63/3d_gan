@@ -143,7 +143,7 @@ class Trainer():
                 # D_fake = self.discriminator(fake_im, landmarks)
 
                 # loss_gen = self.bce_loss_fn(D_fake, self.ones)
-                loss_gen = self.l1_loss_fn(fake_im,real_im)
+                loss_gen = self.l1_loss_fn(fake_im,right_imgs)
                 loss = loss_gen
                 loss.backward()
                 self.opt_g.step()
@@ -171,7 +171,7 @@ class Trainer():
                     torchvision.utils.save_image(fake_im.data,
                         "{}fake_{}.png".format(config.sample_dir,cc),normalize=True)
                     # real_store = real_im.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*29,3,64,64)
-                    torchvision.utils.save_image(real_im.data,
+                    torchvision.utils.save_image(right_imgs.data,
                         "{}real_{}.png".format(config.sample_dir,cc),normalize=True)
                     cc += 1
             
