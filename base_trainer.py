@@ -16,8 +16,8 @@ from tensorboard_logger import configure, log_value
 # from embedding import Encoder
 class Trainer():
     def __init__(self, config):
-        self.generator =  Generator(config.cuda)
-        self.discriminator =  Discriminator(config.cuda)
+        self.generator =  Generator()
+        self.discriminator =  Discriminator()
         # self.encoder = Encoder()
         # if config.perceptual:
         #     self.encoder.load_state_dict(torch.load('/mnt/disk1/dat/lchen63/lrw/model/embedding/encoder3_0.pth'))
@@ -105,7 +105,7 @@ class Trainer():
                     example_image = Variable(example_image.float())
                     example_lms = Variable(example_lms.float())
                     right_lmss = Variable(right_lmss.float())
-                    right_imgs    = Variable(right_imgs.float())
+                    right_imgs = Variable(right_imgs.float())
                     wrong_imgs = Variable(wrong_imgs.float())
                     wrong_lmss = Variable(wrong_lmss.float())
 
@@ -118,11 +118,11 @@ class Trainer():
 
                 #train the discriminator
 
-                D_real = self.discriminator(example_image,real_im,landmarks)
+                D_real = self.discriminator(real_im,right_lmss)
 
-                D_wrong = self.discriminator(example_image,real_im,wrong_landmarks)
+                D_wrong = self.discriminator(real_im,wrong_lmss)
 
-                D_fake = self.discriminator(example_image,fake_im.detach(),landmarks)
+                D_fake = self.discriminator(fake_im.detach(),right_lmss)
 
 
                 loss_real = self.bce_loss_fn(D_real, self.ones)
@@ -136,8 +136,8 @@ class Trainer():
 
 
                 # train the generator
-                fake_im = self.generator(example_lips, landmarks)
-                D_fake = self.discriminator(example_image,fake_im, landmarks)
+                fake_im = self.generator(example_lips, right_lmss)
+                D_fake = self.discriminator(fake_im, right_lmss)
 
                 loss_gen = self.bce_loss_fn(D_fake, self.ones)
                 loss_gen = self.l1_loss_fn(fake_im,right_imgs)
