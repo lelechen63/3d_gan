@@ -140,7 +140,6 @@ class Trainer():
                 D_fake = self.discriminator(example_image,fake_im, right_lmss)
 
                 loss_gen = self.bce_loss_fn(D_fake, self.ones)
-                loss_gen = self.l1_loss_fn(fake_im,right_imgs)
                 loss = loss_gen
                 loss.backward()
                 self.opt_g.step()
