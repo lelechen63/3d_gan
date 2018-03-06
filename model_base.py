@@ -54,7 +54,7 @@ class Generator(nn.Module):
 
         norm_layer = nn.BatchNorm3d
         self.compress = nn.Sequential(
-            nn.Conv3d(ngf * 8, ngf * mult * 2, kernel_size=3,
+            nn.Conv3d(ngf * 8 + 256, ngf * mult * 2, kernel_size=3,
                                 stride=1, padding=1, bias=use_bias),
             norm_layer(ngf * mult * 2),
             nn.ReLU(True)
