@@ -153,7 +153,7 @@ class Discriminator(nn.Module):
             conv2d(3, 64, 4, 2, 1, normalizer=None),
             conv2d(64, 128, 4, 2, 1),
             conv2d(128, 256, 4, 2, 1),
-            conv3d(256, 512, 4, 2, 1)
+            conv2d(256, 512, 4, 2, 1)
             )
 
         self.audio_extractor = nn.Sequential(
