@@ -48,11 +48,11 @@ class LRWdataset1D_3d(data.Dataset):
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
                     right_imgs = torch.FloatTensor(16,3,128,128)
-                    right_lmss = torch.FloatTensor(1,64,128)
+                    right_lmss = torch.FloatTensor(1,16,128)
                     # right_landmarks = torch.FloatTensor(8,68,2)
 
                     wrong_imgs = torch.FloatTensor(16,3,128,128)
-                    wrong_lmss = torch.FloatTensor(1, 64,128)
+                    wrong_lmss = torch.FloatTensor(1, 16,128)
                     # wrong_landmark = torch.FloatTensor(8,68,2)
 
                     for i in  range(0,16):
@@ -79,7 +79,17 @@ class LRWdataset1D_3d(data.Dataset):
                         right_lms = torch.FloatTensor(np.load(lms_path))
                         right_imgs[i,:,:,:] = right_img
                         # right_landmarks[i,:,:] =  right_landmark
-                        right_lmss[0,i*4:(i+1) * 4,:] =  right_lms
+                        zeroVecD = np.zeros((1, 64), dtype='f16')
+                        zeroVecDD = np.zeros((2, 64), dtype='f16')
+                        melFrames = np.transpose(np.load(lms_path))
+                        melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
+                        melDDelta = np.insert(np.diff(melFrames, n=2, axis=0), 0, zeroVecDD, axis=0)
+
+                        features = np.concatenate((melDelta, melDDelta), axis=1)
+                        right_lms = torch.FloatTensor(features)
+
+                        print right_lms.size()
+                        print '+++'
 
 
                         image_path = self.train_data[wrong_index][i*3]
@@ -95,10 +105,18 @@ class LRWdataset1D_3d(data.Dataset):
                         im = self.transform(im)
                         wrong_img = torch.FloatTensor(im)
                         # wrong_landmark = torch.FloatTensor(np.load(landmark_path))
-                        wrong_lms = torch.FloatTensor(np.load(lms_path))
+                        zeroVecD = np.zeros((1, 64), dtype='f16')
+                        zeroVecDD = np.zeros((2, 64), dtype='f16')
+                        melFrames = np.transpose(np.load(lms_path))
+                        melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
+                        melDDelta = np.insert(np.diff(melFrames, n=2, axis=0), 0, zeroVecDD, axis=0)
+
+                        features = np.concatenate((melDelta, melDDelta), axis=1)
+                        wrong_lms = torch.FloatTensor(features)
+
                         wrong_imgs[i,:,:,:] = wrong_img
                         # wrong_landmarks[i,:,:,:] =  wrong_landmark
-                        wrong_lmss[0,i*4:(i+1) * 4,:] =  wrong_lms
+                        wrong_lmss[0,i,:] =  wrong_lms
 
                     example_image = right_imgs[0]
                     # example_landmark = right_landmarks[0]
@@ -126,11 +144,11 @@ class LRWdataset1D_3d(data.Dataset):
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
                     right_imgs = torch.FloatTensor(16,3,128,128)
-                    right_lmss = torch.FloatTensor(1,64,128)
+                    right_lmss = torch.FloatTensor(1,16,128)
                     # right_landmarks = torch.FloatTensor(8,68,2)
 
                     wrong_imgs = torch.FloatTensor(16,3,128,128)
-                    wrong_lmss = torch.FloatTensor(1,64,128)
+                    wrong_lmss = torch.FloatTensor(1,16,128)
                     # wrong_landmark = torch.FloatTensor(8,68,2)
 
                     for i in  range(0,16):
@@ -147,10 +165,17 @@ class LRWdataset1D_3d(data.Dataset):
                         im = self.transform(im)
                         right_img = torch.FloatTensor(im)
                         # right_landmark = torch.FloatTensor(np.load(landmark_path))
-                        right_lms = torch.FloatTensor(np.load(lms_path))
+                        zeroVecD = np.zeros((1, 64), dtype='f16')
+                        zeroVecDD = np.zeros((2, 64), dtype='f16')
+                        melFrames = np.transpose(np.load(lms_path))
+                        melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
+                        melDDelta = np.insert(np.diff(melFrames, n=2, axis=0), 0, zeroVecDD, axis=0)
+
+                        features = np.concatenate((melDelta, melDDelta), axis=1)
+                        right_lms = torch.FloatTensor(features)
                         right_imgs[i,:,:,:] = right_img
                         # right_landmarks[i,:,:] =  right_landmark
-                        right_lmss[0,i*4:(i+1) * 4,:] =  right_lms
+                        right_lmss[0,i,:] =  right_lms
 
 
                         image_path = self.train_data[wrong_index][i*3]
@@ -166,10 +191,19 @@ class LRWdataset1D_3d(data.Dataset):
                         im = self.transform(im)
                         wrong_img = torch.FloatTensor(im)
                         # wrong_landmark = torch.FloatTensor(np.load(landmark_path))
-                        wrong_lms = torch.FloatTensor(np.load(lms_path))
+
+                        zeroVecD = np.zeros((1, 64), dtype='f16')
+                        zeroVecDD = np.zeros((2, 64), dtype='f16')
+                        melFrames = np.transpose(np.load(lms_path))
+                        melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
+                        melDDelta = np.insert(np.diff(melFrames, n=2, axis=0), 0, zeroVecDD, axis=0)
+
+                        features = np.concatenate((melDelta, melDDelta), axis=1)
+                        wrong_lms = torch.FloatTensor(features)
+
                         wrong_imgs[i,:,:,:] = wrong_img
                         # wrong_landmarks[i,:,:,:] =  wrong_landmark
-                        wrong_lmss[0,i*4:(i+1) * 4,:] =  wrong_lms
+                        wrong_lmss[0,i,:] =  wrong_lms
 
                     example_image = right_imgs[0]
                     # example_landmark = right_landmarks[0]
