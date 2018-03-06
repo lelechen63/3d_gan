@@ -149,6 +149,13 @@ class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
 
+        self.net_example = nn.Sequential(
+            conv2d(3, 64, 4, 2, 1, normalizer=None),
+            conv2d(64, 128, 4, 2, 1),
+            conv2d(128, 256, 4, 2, 1),
+            conv3d(256, 512, 4, 2, 1)
+            )
+
         self.audio_extractor = nn.Sequential(
             conv2d(1,32,3,1,1),
             conv2d(32,64,3,(1,2),1), #16,64
@@ -170,30 +177,28 @@ class Discriminator(nn.Module):
             conv3d(256, 512, 4, (1,2,2), 1)
         )
         #(512,1,4,4)
-        self.net_example = nn.Sequential(
-            conv2d(3, 64, 4, 2, 1, normalizer=None),
-            conv2d(64, 128, 4, 2, 1),
-            conv2d(128, 256, 4, 2, 1),
-            conv3d(256, 256, 4, 2, 1)
-            )
-
 
         self.net_joint = nn.Sequential(
             conv3d(1024, 512, 3, 1, 1),
             conv3d(512, 1, (1,4,4), 1, 0, activation=nn.Sigmoid, normalizer=None)
         )
 
-    def forward(self,example_im, x, audio):
-        x = self.net_image(x)
+    def forward(self, x, audio):
+        v = self.net_image(x)
         audio = self.cnn_extractor(audio)
         # audio = self.audio_fc(audio)
         audio = audio.view(audio.size(0), audio.size(1), 1, 1, 1)
-        audio = audio.repeat(1, 1, x.size(2), x.size(3),x.size(4))
-        example_im = self.net_example(example_im).unsqueeze(2)
-        out = torch.cat([example_im,x, audio], 1)
+        audio = audio.repeat(1, 1, v.size(2), v.size(3),v.size(4))
+        out = torch.cat([v, audio], 1)
         out = self.net_joint(out)
-        return out.view(out.size(0))
+        score1 = out.view(out.size(0))
+        v2 = self.net_image(x)
+        example_im = self.net_example(example_im).unsqueeze(2)
+        out = torch.cat([v2,example_im], 1)
+        out = self.net_joint(out)
+        score2 = out.view(out.size(0))
 
+        return (score1 + score2) * 0.5
 
 
 
