@@ -167,10 +167,10 @@ class Trainer():
                                   step+1, num_steps_per_epoch, loss_gen.data[0],  eta))
                     # log_value('generator_loss',loss_gen.data[0] , step + num_steps_per_epoch * epoch)
                 if (step ) % (num_steps_per_epoch/50) == 0 :
-                    fake_store = fake_im.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*16,3,128,128)
+                    fake_store = fake_im.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*16,3,64,64)
                     torchvision.utils.save_image(fake_store,
                         "{}fake_{}.png".format(config.sample_dir,cc), nrow=16,normalize=True)
-                    real_store = right_imgs.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*16,3,128,128)
+                    real_store = right_imgs.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*16,3,64,64)
                     torchvision.utils.save_image(real_store,
                         "{}real_{}.png".format(config.sample_dir,cc), nrow=16,normalize=True)
                     cc += 1
