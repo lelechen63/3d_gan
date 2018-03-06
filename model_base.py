@@ -185,7 +185,7 @@ class Discriminator(nn.Module):
 
     def forward(self, x, audio):
         v = self.net_image(x)
-        audio = self.cnn_extractor(audio)
+        audio = self.audio_extractor(audio)
         # audio = self.audio_fc(audio)
         audio = audio.view(audio.size(0), audio.size(1), 1, 1, 1)
         audio = audio.repeat(1, 1, v.size(2), v.size(3),v.size(4))
