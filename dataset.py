@@ -43,7 +43,7 @@ class LRWdataset1D_3d(data.Dataset):
         if self.train=='train':
         
             while True:
-                # try:
+                try:
                     wrong_index = random.choice(
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
@@ -126,14 +126,14 @@ class LRWdataset1D_3d(data.Dataset):
                     return example_image, example_lms, right_imgs, right_lmss, wrong_imgs,wrong_lmss
 
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss, wrong_imgs, wrong_landmarks,wrong_lmss
-                # except:
-                #     index = (index + 1) % len(self.train_data)
+                except:
+                    index = (index + 1) % len(self.train_data)
 
-                    # print 'Fuck'
+                    print 'Fuck'
 
         elif self.train =='test':
             while True:
-                # try:
+                try:
                     wrong_index = random.choice(
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
@@ -146,7 +146,7 @@ class LRWdataset1D_3d(data.Dataset):
                     # wrong_landmark = torch.FloatTensor(8,68,2)
 
                     for i in  range(0,16):
-                        image_path = self.train_data[index][i*3]
+                        image_path = self.test_data[index][i*3]
                         lms_path = self.test_data[index][1 + i*3]
                         landmark_path = self.test_data[index][2 + i*3]
                         # im = cv2.imread(image_path)
@@ -208,8 +208,9 @@ class LRWdataset1D_3d(data.Dataset):
                    
 
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss, wrong_imgs, wrong_landmarks,wrong_lmss
-                # except:
-                #     index = (index + 1) % len(self.train_data)
+                except:
+                    print 'fuck'
+                    index = (index + 1) % len(self.test_data)
         elif  self.train =='demo':
             while True:
                 # try:
