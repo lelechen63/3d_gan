@@ -113,7 +113,7 @@ class Trainer():
                 
 
                 fake_im = self.generator(example_image, right_lmss)
-
+                real_im = right_imgs
                
 
                 #train the discriminator
