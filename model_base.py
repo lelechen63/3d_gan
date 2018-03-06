@@ -211,7 +211,7 @@ class Discriminator2(nn.Module):
         )
         self.audio_fc= nn.Sequential(
             Flatten(),
-            nn.Linear(256*16*32,512),
+            nn.Linear(256*16*32,256),
             nn.ReLU(True)
         )
 
