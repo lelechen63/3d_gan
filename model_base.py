@@ -165,7 +165,7 @@ class Discriminator(nn.Module):
         )
         self.audio_fc= nn.Sequential(
             Flatten(),
-            nn.Linear(256*16*16,256),
+            nn.Linear(512*16*16,512),
             nn.ReLU(True)
         )
 
@@ -186,7 +186,7 @@ class Discriminator(nn.Module):
     def forward(self, x, audio):
         v = self.net_image(x)
         audio = self.audio_extractor(audio)
-        # audio = self.audio_fc(audio)
+        audio = self.audio_fc(audio)
         audio = audio.view(audio.size(0), audio.size(1), 1, 1, 1)
         audio = audio.repeat(1, 1, v.size(2), v.size(3),v.size(4))
         out = torch.cat([v, audio], 1)
