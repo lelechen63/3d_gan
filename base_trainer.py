@@ -11,13 +11,13 @@ from torch.nn.modules.module import _addindent
 import numpy as np
 
 from dataset import  LRWdataset1D_3d as LRWdataset
-from model_base import Generator, Discriminator
+from model_base import Generator, Discriminator2
 from tensorboard_logger import configure, log_value
 # from embedding import Encoder
 class Trainer():
     def __init__(self, config):
         self.generator =  Generator()
-        self.discriminator =  Discriminator()
+        self.discriminator =  Discriminator2()
         # self.encoder = Encoder()
         # if config.perceptual:
         #     self.encoder.load_state_dict(torch.load('/mnt/disk1/dat/lchen63/lrw/model/embedding/encoder3_0.pth'))
