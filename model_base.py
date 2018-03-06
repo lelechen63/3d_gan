@@ -10,6 +10,47 @@ from torch.autograd import Variable
 class Flatten(nn.Module):
     def forward(self, input):
         return input.view(input.size(0), -1)
+# Define a resnet block
+class ResnetBlock(nn.Module):
+    def __init__(self, dim, padding_type, norm_layer, use_dropout, use_bias):
+        super(ResnetBlock, self).__init__()
+        self.conv_block = self.build_conv_block(dim, padding_type, norm_layer, use_dropout, use_bias)
+
+    def build_conv_block(self, dim, padding_type, norm_layer, use_dropout, use_bias):
+        conv_block = []
+        p = 0
+        if padding_type == 'reflect':
+            conv_block += [nn.ReflectionPad3d(1)]
+        elif padding_type == 'replicate':
+            conv_block += [nn.ReplicationPad3d(1)]
+        elif padding_type == 'zero':
+            p = (0,1,1)
+        else:
+            raise NotImplementedError('padding [%s] is not implemented' % padding_type)
+
+        conv_block += [nn.Conv3d(dim, dim, kernel_size=(1,3,3), padding=p, bias=use_bias),
+                       norm_layer(dim),
+                       nn.ReLU(True)]
+        if use_dropout:
+            conv_block += [nn.Dropout(0.5)]
+
+        p = 0
+        if padding_type == 'reflect':
+            conv_block += [nn.ReflectionPad2d(1)]
+        elif padding_type == 'replicate':
+            conv_block += [nn.ReplicationPad2d(1)]
+        elif padding_type == 'zero':
+            p = (0,1,1)
+        else:
+            raise NotImplementedError('padding [%s] is not implemented' % padding_type)
+        conv_block += [nn.Conv3d(dim, dim, kernel_size=(1,3,3), padding=p, bias=use_bias),
+                       norm_layer(dim)]
+
+        return nn.Sequential(*conv_block)
+
+    def forward(self, x):
+        out = x + self.conv_block(x)
+        return out
 
 
 class Generator(nn.Module):
@@ -93,47 +134,6 @@ class Generator(nn.Module):
 
 
 
-# Define a resnet block
-class ResnetBlock(nn.Module):
-    def __init__(self, dim, padding_type, norm_layer, use_dropout, use_bias):
-        super(ResnetBlock, self).__init__()
-        self.conv_block = self.build_conv_block(dim, padding_type, norm_layer, use_dropout, use_bias)
-
-    def build_conv_block(self, dim, padding_type, norm_layer, use_dropout, use_bias):
-        conv_block = []
-        p = 0
-        if padding_type == 'reflect':
-            conv_block += [nn.ReflectionPad3d(1)]
-        elif padding_type == 'replicate':
-            conv_block += [nn.ReplicationPad3d(1)]
-        elif padding_type == 'zero':
-            p = (0,1,1)
-        else:
-            raise NotImplementedError('padding [%s] is not implemented' % padding_type)
-
-        conv_block += [nn.Conv3d(dim, dim, kernel_size=(1,3,3), padding=p, bias=use_bias),
-                       norm_layer(dim),
-                       nn.ReLU(True)]
-        if use_dropout:
-            conv_block += [nn.Dropout(0.5)]
-
-        p = 0
-        if padding_type == 'reflect':
-            conv_block += [nn.ReflectionPad2d(1)]
-        elif padding_type == 'replicate':
-            conv_block += [nn.ReplicationPad2d(1)]
-        elif padding_type == 'zero':
-            p = (0,1,1)
-        else:
-            raise NotImplementedError('padding [%s] is not implemented' % padding_type)
-        conv_block += [nn.Conv3d(dim, dim, kernel_size=(1,3,3), padding=p, bias=use_bias),
-                       norm_layer(dim)]
-
-        return nn.Sequential(*conv_block)
-
-    def forward(self, x):
-        out = x + self.conv_block(x)
-        return out
 
 
 # a = torch.Tensor(1,3,64,64)
@@ -156,34 +156,57 @@ class Discriminator(nn.Module):
             conv2d(128,256,3,(1,2),1), # 16,32 
             conv2d(256,512,3,(1,2),1), # 16,16
         )
-
         self.audio_fc= nn.Sequential(
             Flatten(),
-            nn.Linear(256*16*32,256),
+            nn.Linear(256*16*16,256),
             nn.ReLU(True)
         )
+
+       
         self.net_image = nn.Sequential(
             conv3d(3, 64, 4, (2,2,2), 1, normalizer=None),
             conv3d(64, 128, 4, (2,2,2), 1),
             conv3d(128, 256, 4, (2,2,2), 1),
             conv3d(256, 512, 4, (1,2,2), 1)
         )
+        #(512,1,4,4)
+        self.net_example = nn.Sequential(
+            conv2d(3, 64, 4, 2, 1, normalizer=None),
+            conv2d(64, 128, 4, 2, 1),
+            conv2d(128, 256, 4, 2, 1),
+            conv3d(256, 256, 4, 2, 1)
+            )
+
 
         self.net_joint = nn.Sequential(
-            conv3d(512 + 256, 512, 3, 1, 1),
+            conv3d(1024, 512, 3, 1, 1),
             conv3d(512, 1, (1,4,4), 1, 0, activation=nn.Sigmoid, normalizer=None)
         )
 
-    def forward(self, x, audio):
+    def forward(self,example_im, x, audio):
         x = self.net_image(x)
         audio = self.cnn_extractor(audio)
-        audio = self.audio_fc(audio)
+        # audio = self.audio_fc(audio)
         audio = audio.view(audio.size(0), audio.size(1), 1, 1, 1)
         audio = audio.repeat(1, 1, x.size(2), x.size(3),x.size(4))
-        out = torch.cat([x, audio], 1)
+        example_im = self.net_example(example_im).unsqueeze(2)
+        out = torch.cat([example_im,x, audio], 1)
         out = self.net_joint(out)
         return out.view(out.size(0))
 
 
 
 
+# a = torch.Tensor(1,3,16,64,64)
+# a = Variable(a)
+# net_image = nn.Sequential(
+#             conv3d(3, 64, 4, (2,2,2), 1, normalizer=None),
+#             conv3d(64, 128, 4, (2,2,2), 1),
+#             conv3d(128, 256, 4, (2,2,2), 1),
+#             conv3d(256, 512, 4, (1,2,2), 1)
+#         )
+# # b = torch.Tensor(1,1,64,128)
+# # b = Variable(b).cuda()
+# # netG = Generator().cuda()
+# c = net_image(a)
+# print c.size()

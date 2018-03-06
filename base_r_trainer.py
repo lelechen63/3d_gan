@@ -17,12 +17,7 @@ from tensorboard_logger import configure, log_value
 class Trainer():
     def __init__(self, config):
         self.generator =  Generator(config.cuda)
-        self.discriminator =  Discriminator(config.cuda)
-        # self.encoder = Encoder()
-        # if config.perceptual:
-        #     self.encoder.load_state_dict(torch.load('/mnt/disk1/dat/lchen63/lrw/model/embedding/encoder3_0.pth'))
-        #     for param in self.encoder.parameters():
-        #         param.requires_grad = False
+       
 
         print(self.generator)
         self.bce_loss_fn = nn.BCELoss()
@@ -31,15 +26,10 @@ class Trainer():
 
         self.opt_g = torch.optim.Adam(filter(lambda p: p.requires_grad, self.generator.parameters()),
             lr=config.lr, betas=(config.beta1, config.beta2))
-        self.opt_d = torch.optim.Adam(self.discriminator.parameters(),
-            lr=config.lr, betas=(config.beta1, config.beta2))
-
-
    
         if config.dataset == 'lrw':
             self.dataset = LRWdataset(config.dataset_dir, train=config.is_train)
-  
-
+       
         self.data_loader = DataLoader(self.dataset,
                                       batch_size=config.batch_size,
                                       num_workers=config.num_thread,
@@ -62,8 +52,7 @@ class Trainer():
         if config.cuda:
             device_ids = [int(i) for i in config.device_ids.split(',')]
             self.generator     = self.generator.cuda()
-            self.discriminator = self.discriminator.cuda()
-            # self.encoder = self.encoder.cuda()
+       
             self.bce_loss_fn   = self.bce_loss_fn.cuda()
             self.mse_loss_fn   = self.mse_loss_fn.cuda()
             self.ones          = self.ones.cuda()
@@ -116,30 +105,6 @@ class Trainer():
 
                
 
-                #train the discriminator
-
-                D_real = self.discriminator(example_image,real_im,landmarks)
-
-                D_wrong = self.discriminator(example_image,real_im,wrong_landmarks)
-
-                D_fake = self.discriminator(example_image,fake_im.detach(),landmarks)
-
-
-                loss_real = self.bce_loss_fn(D_real, self.ones)
-                loss_wrong = self.bce_loss_fn(D_wrong, self.zeros)
-                loss_fake = self.bce_loss_fn(D_fake, self.zeros)
-
-                loss_disc = loss_real + 0.5*(loss_wrong + loss_fake)
-                loss_disc.backward()
-                self.opt_d.step()
-                self._reset_gradients()
-
-
-                # train the generator
-                fake_im = self.generator(example_lips, landmarks)
-                D_fake = self.discriminator(example_image,fake_im, landmarks)
-
-                loss_gen = self.bce_loss_fn(D_fake, self.ones)
                 loss_gen = self.l1_loss_fn(fake_im,right_imgs)
                 loss = loss_gen
                 loss.backward()
@@ -152,16 +117,11 @@ class Trainer():
                     steps_remain = num_steps_per_epoch-step+1 + \
                         (config.max_epochs-epoch+1)*num_steps_per_epoch
                     eta = int((t2-t1)*steps_remain)
-                    # if config.perceptual:
-                    #     print("[{}/{}][{}/{}]   Loss_G: {:.4f}, loss_perceptual: {:.4f}  ETA: {} second"
-                    #           .format(epoch+1, config.max_epochs,
-                    #                   step+1, num_steps_per_epoch, loss_gen.data[0], loss_perc.data[0],  eta))
-                    #     log_value('generator_loss',loss_gen.data[0] , step + num_steps_per_epoch * epoch)
-                    # else:
+               
 
-                    print("[{}/{}][{}/{}]   Loss_G: {:.4f}, Loss_D: {:.4f},  ETA: {} second"
+                    print("[{}/{}][{}/{}]   Loss_G: {:.4f},  ETA: {} second"
                           .format(epoch+1, config.max_epochs,
-                                  step+1, num_steps_per_epoch, loss_gen.data[0], loss_disc.data[0],  eta))
+                                  step+1, num_steps_per_epoch, loss_gen.data[0],  eta))
                 if (step ) % (num_steps_per_epoch/50) == 0 :
                     fake_store = fake_im.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*16,3,64,64)
                     torchvision.utils.save_image(fake_store,
@@ -172,26 +132,15 @@ class Trainer():
                     cc += 1
             
                     torch.save(self.generator.state_dict(),
-                               "{}/generator_{}.pth"
-                               .format(config.model_dir,cc))
-                    torch.save(self.discriminator.state_dict(),
-                               "{}/discriminator_{}.pth"
+                               "{}/r_generator_{}.pth"
                                .format(config.model_dir,cc))
 
     def load(self, directory, epoch):
         gen_path = os.path.join(directory, 'generator_{}.pth'.format(epoch))
 
         self.generator.load_state_dict(torch.load(gen_path))
-
-        dis_path = os.path.join(directory, 'discriminator_{}.pth'.format(epoch))
-
-        self.discriminator.load_state_dict(torch.load(dis_path))
-
-        print("Load pretrained [{}, {}]".format(gen_path, disc_path))
-
     def _reset_gradients(self):
         self.generator.zero_grad()
-        self.discriminator.zero_grad()
 
 
 
@@ -214,7 +163,7 @@ def parse_args():
                         default=100)
     parser.add_argument("--batch_size",
                         type=int,
-                        default=32)
+                        default=64)
     parser.add_argument("--noise_size",
                         type=int,
                         default=0)
@@ -229,19 +178,19 @@ def parse_args():
                         # default = '/media/lele/DATA/lrw/data2/pickle')
     parser.add_argument("--model_dir",
                         type=str,
-                        default="/mnt/disk1/dat/lchen63/lrw/model/3d_base")
+                        default="/mnt/disk1/dat/lchen63/lrw/model/3d_base_r")
                         # default='/media/lele/DATA/lrw/data2/model')
     parser.add_argument("--sample_dir",
                         type=str,
-                        default="/mnt/disk1/dat/lchen63/lrw/sample/3d_base/")
+                        default="/mnt/disk1/dat/lchen63/lrw/sample/3d_base_r/")
                         # default='/media/lele/DATA/lrw/data2/sample/lstm_gan')
     parser.add_argument("--log_dir",
                         type=str,
                         default="/mnt/disk1/dat/lchen63/data/lrw/data/log/")
                         # default="/media/lele/DATA/lrw/data2/log/lstm_gan/")
-    parser.add_argument('--device_ids', type=str, default='3')
+    parser.add_argument('--device_ids', type=str, default='2')
     parser.add_argument('--dataset', type=str, default='lrw')
-    parser.add_argument('--num_thread', type=int, default=32)
+    parser.add_argument('--num_thread', type=int, default=8)
     # parser.add_argument('--flownet_pth', type=str, help='path of flownets model')
     parser.add_argument('--weight_decay', type=float, default=4e-4)
     parser.add_argument('--lr_corr', type=float, default=0.0001)
@@ -265,7 +214,7 @@ def main(config):
 if __name__ == "__main__":
     config = parse_args()
     config.is_train = 'train'
-    import base_trainer as trainer
+    import base_trainer_r as trainer
     if not os.path.exists(config.model_dir):
         os.mkdir(config.model_dir)
     if not os.path.exists(config.sample_dir):
