@@ -82,8 +82,6 @@ class LRWdataset1D_3d(data.Dataset):
                         zeroVecD = np.zeros((1, 64), dtype='f16')
                         melFrames = np.transpose(np.load(lms_path))
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
-                        print melDelta.shape
-                        print melDDelta.shape
                         features = np.concatenate((melDelta, melFrames), axis=1)
                         right_lms = torch.FloatTensor(features)
 
