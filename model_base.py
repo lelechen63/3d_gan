@@ -183,7 +183,7 @@ class Discriminator(nn.Module):
             conv3d(512, 1, (1,4,4), 1, 0, activation=nn.Sigmoid, normalizer=None)
         )
 
-    def forward(self, x, audio):
+    def forward(self, example_im, x, audio):
         v = self.net_image(x)
         audio = self.audio_extractor(audio)
         audio = self.audio_fc(audio)

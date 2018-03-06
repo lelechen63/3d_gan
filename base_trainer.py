@@ -118,11 +118,11 @@ class Trainer():
 
                 #train the discriminator
 
-                D_real = self.discriminator(real_im,right_lmss)
+                D_real = self.discriminator(example_image,real_im,right_lmss)
 
-                D_wrong = self.discriminator(real_im,wrong_lmss)
+                D_wrong = self.discriminator(example_image,real_im,wrong_lmss)
 
-                D_fake = self.discriminator(fake_im.detach(),right_lmss)
+                D_fake = self.discriminator(example_image,fake_im.detach(),right_lmss)
 
 
                 loss_real = self.bce_loss_fn(D_real, self.ones)
@@ -137,7 +137,7 @@ class Trainer():
 
                 # train the generator
                 fake_im = self.generator(example_lips, right_lmss)
-                D_fake = self.discriminator(fake_im, right_lmss)
+                D_fake = self.discriminator(example_image,fake_im, right_lmss)
 
                 loss_gen = self.bce_loss_fn(D_fake, self.ones)
                 loss_gen = self.l1_loss_fn(fake_im,right_imgs)
