@@ -24,13 +24,9 @@ class Generator(nn.Module):
         self.audio_extractor = nn.Sequential(
             conv2d(1,32,3,1,1),
             conv2d(32,64,3,(1,2),1), #16,64
-            # nn.MaxPool2d((1,2),(1,2)), # 16,32
             conv2d(64,128,3,1,1), 
             conv2d(128,256,3,(1,2),1), # 16,32 
             conv2d(256,512,3,(1,2),1), # 16,16
-
-            # conv2d(256,512,3,2,1), # 8,8
-            # nn.MaxPool2d((1,2),(1,2)) # 4,4
         )
 
         if type(norm_layer) == functools.partial:
@@ -39,13 +35,13 @@ class Generator(nn.Module):
             use_bias = norm_layer == nn.InstanceNorm2d
 
         model = [nn.ReflectionPad2d(3),
-                 nn.Conv2d(3, ngf, kernel_size=7, padding=0,
+                 nn.Conv2d(input_nc, ngf, kernel_size=7, padding=0,
                            bias=use_bias),
                  norm_layer(ngf),
                  nn.ReLU(True)]
 
 
-        n_downsampling = 3
+        n_downsampling = 2
         for i in range(n_downsampling):
             mult = 2**i
             model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3,
@@ -57,13 +53,13 @@ class Generator(nn.Module):
         
 
         norm_layer = nn.BatchNorm3d
-        # self.compress = nn.Sequential(
-        #     nn.Conv3d(ngf * 8, ngf * mult * 2, kernel_size=3,
-        #                         stride=1, padding=1, bias=use_bias),
-        #     norm_layer(ngf * mult * 2),
-        #     nn.ReLU(True)
+        self.compress = nn.Sequential(
+            nn.Conv3d(ngf * 8, ngf * mult * 2, kernel_size=3,
+                                stride=1, padding=1, bias=use_bias),
+            norm_layer(ngf * mult * 2),
+            nn.ReLU(True)
 
-        #     )
+            )
 
         model = []
 
@@ -86,12 +82,12 @@ class Generator(nn.Module):
         self.generator = nn.Sequential(*model)
 
     def forward(self, input, audio):
-        image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,16,1,1)
+        image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,audio.size(2)/4,1,1)
         audio_feature = self.audio_extractor(audio).unsqueeze(-1).repeat(1,1,1,1,image_feature.size(-1))
-        new_input = image_feature + audio_feature
-        # new_input = torch.cat([image_feature,audio_feature],1)
-        # out = self.compress(new_input)
-        out = self.generator(new_input)
+
+        new_input = torch.cat([image_feature,audio_feature],1)
+        out = self.compress(new_input)
+        out = self.generator(out)
 
         return out
 
@@ -153,13 +149,12 @@ class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
 
-        self.cnn_extractor = nn.Sequential(
+        self.audio_extractor = nn.Sequential(
             conv2d(1,32,3,1,1),
-            conv2d(32,64,3,2,1),
-            conv2d(64,128,3,1,1),
-            conv2d(128,256,3,2,1)
-
-
+            conv2d(32,64,3,(1,2),1), #16,64
+            conv2d(64,128,3,1,1), 
+            conv2d(128,256,3,(1,2),1), # 16,32 
+            conv2d(256,512,3,(1,2),1), # 16,16
         )
 
         self.audio_fc= nn.Sequential(
@@ -188,5 +183,7 @@ class Discriminator(nn.Module):
         out = torch.cat([x, audio], 1)
         out = self.net_joint(out)
         return out.view(out.size(0))
+
+
 
 
