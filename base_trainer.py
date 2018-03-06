@@ -136,7 +136,7 @@ class Trainer():
 
 
                 # train the generator
-                fake_im = self.generator(example_lips, right_lmss)
+                fake_im = self.generator(example_image, right_lmss)
                 D_fake = self.discriminator(example_image,fake_im, right_lmss)
 
                 loss_gen = self.bce_loss_fn(D_fake, self.ones)
