@@ -202,7 +202,7 @@ class Discriminator(nn.Module):
 
 class Discriminator2(nn.Module):
     def __init__(self):
-        super(Discriminator, self).__init__()
+        super(Discriminator2, self).__init__()
 
         self.net_example = nn.Sequential(
             conv2d(3, 64, 4, 2, 1, normalizer=None),
