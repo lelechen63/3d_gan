@@ -85,8 +85,7 @@ class LRWdataset1D_3d(data.Dataset):
                         features = np.concatenate((melDelta, melFrames), axis=1)
                         right_lms = torch.FloatTensor(features)
 
-                        print right_lms.size()
-                        print '+++'
+                        
 
 
                         image_path = self.train_data[wrong_index][i*3]
@@ -186,12 +185,10 @@ class LRWdataset1D_3d(data.Dataset):
                         # wrong_landmark = torch.FloatTensor(np.load(landmark_path))
 
                         zeroVecD = np.zeros((1, 64), dtype='f16')
-                        zeroVecDD = np.zeros((2, 64), dtype='f16')
                         melFrames = np.transpose(np.load(lms_path))
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
-                        melDDelta = np.insert(np.diff(melFrames, n=2, axis=0), 0, zeroVecDD, axis=0)
 
-                        features = np.concatenate((melDelta, melDDelta), axis=1)
+                        features = np.concatenate((melDelta, melFrames), axis=1)
                         wrong_lms = torch.FloatTensor(features)
 
                         wrong_imgs[i,:,:,:] = wrong_img
