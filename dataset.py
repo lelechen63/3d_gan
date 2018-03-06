@@ -129,7 +129,6 @@ class LRWdataset1D_3d(data.Dataset):
                 except:
                     index = (index + 1) % len(self.train_data)
 
-                    print 'Fuck'
 
         elif self.train =='test':
             while True:
@@ -209,7 +208,6 @@ class LRWdataset1D_3d(data.Dataset):
 
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss, wrong_imgs, wrong_landmarks,wrong_lmss
                 except:
-                    print 'fuck'
                     index = (index + 1) % len(self.test_data)
         elif  self.train =='demo':
             while True:
