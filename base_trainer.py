@@ -13,6 +13,31 @@ import numpy as np
 from dataset import  LRWdataset1D_3d as LRWdataset
 from model_base import Generator, Discriminator2
 from tensorboard_logger import configure, log_value
+import functools
+from torch.nn import init
+from torch.optim import lr_scheduler
+
+def weights_init_kaiming(m):
+    classname = m.__class__.__name__
+    # print(classname)
+    if classname.find('Conv') != -1:
+        init.kaiming_normal(m.weight.data, a=0, mode='fan_in')
+    elif classname.find('Linear') != -1:
+        init.kaiming_normal(m.weight.data, a=0, mode='fan_in')
+    elif classname.find('BatchNorm2d') != -1:
+        init.normal(m.weight.data, 1.0, 0.02)
+        init.constant(m.bias.data, 0.0)
+
+
+
+def init_weights(net, init_type='kaiming'):
+    print('initialization method [%s]' % init_type)
+    if  init_type == 'kaiming':
+        net.apply(weights_init_kaiming)
+    
+    else:
+        raise NotImple
+
 # from embedding import Encoder
 class Trainer():
     def __init__(self, config):
@@ -73,7 +98,8 @@ class Trainer():
 
         self.config = config
         self.start_epoch = 0
-
+        init_weights(self.generator, init_type='kaiming')
+        init_weights(self.discriminator, init_type='kaiming')
         if config.load_model:
             self.start_epoch = config.start_epoch
             self.load(config.pretrained_dir, config.pretrained_epoch)
@@ -210,7 +236,7 @@ def parse_args():
                         default=0.999)
     parser.add_argument("--lambda1",
                         type=int,
-                        default=100)
+                        default=10)
     parser.add_argument("--batch_size",
                         type=int,
                         default=32)

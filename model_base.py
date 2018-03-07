@@ -3,8 +3,7 @@ import torch.nn as nn
 from pts3d import *
 from ops import *
 import torchvision.models as models
-import functools
-from torch.autograd import Variable
+mentedError('initialization method [%s] is not implemented' % init_type)
 
 
 class Flatten(nn.Module):
@@ -63,10 +62,10 @@ class Generator(nn.Module):
         norm_layer = nn.BatchNorm2d
 
         self.audio_extractor = nn.Sequential(
-            conv2d(1,32,3,1,1),
-            conv2d(32,64,3,(1,2),1), #16,64
-            conv2d(64,128,3,1,1), 
-            conv2d(128,256,3,(1,2),1), # 16,32 
+            conv2d(1,32,3,1,1, normalizer = None),
+            conv2d(32,64,3,(1,2),1, normalizer = None), #16,64
+            conv2d(64,128,3,1,1, normalizer = None), 
+            conv2d(128,256,3,(1,2),1, normalizer = None), # 16,32 
             nn.MaxPool2d((1,2),(1,2)), # 16,16
         )
 
@@ -157,10 +156,10 @@ class Discriminator(nn.Module):
             )
 
         self.audio_extractor = nn.Sequential(
-            conv2d(1,32,3,1,1),
-            conv2d(32,64,3,2,1), #8,64
-            conv2d(64,128,3,1,1), 
-            conv2d(128,256,3,2,1), # 4,32 
+            conv2d(1,32,3,1,1, normalizer=None),
+            conv2d(32,64,3,2,1, normalizer=None), #8,64
+            conv2d(64,128,3,1,1, normalizer=None), 
+            conv2d(128,256,3,2,1, normalizer=None), # 4,32 
         )
         self.audio_fc= nn.Sequential(
             Flatten(),
@@ -205,14 +204,14 @@ class Discriminator2(nn.Module):
         super(Discriminator2, self).__init__()
 
         self.audio_extractor = nn.Sequential(
-            conv2d(1,32,3,1,1),
-            conv2d(32,64,3,(1,2),1), #16,64
-            conv2d(64,128,3,1,1), 
-            conv2d(128,256,3,(1,2),1), # 16,32 
+            conv2d(1,32,3,1,1, normalizer=None),
+            conv2d(32,64,3,2,1, normalizer=None), #16,64
+            conv2d(64,128,3,1,1, normalizer=None), 
+            conv2d(128,256,3,2,1, normalizer=None), # 16,32 
         )
         self.audio_fc= nn.Sequential(
             Flatten(),
-            nn.Linear(256*16*32,256),
+            nn.Linear(256*4*32,256),
             nn.ReLU(True)
         )
 
