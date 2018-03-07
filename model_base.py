@@ -3,7 +3,6 @@ import torch.nn as nn
 from pts3d import *
 from ops import *
 import torchvision.models as models
-mentedError('initialization method [%s] is not implemented' % init_type)
 
 
 class Flatten(nn.Module):
