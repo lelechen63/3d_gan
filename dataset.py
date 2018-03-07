@@ -61,7 +61,7 @@ class LRWdataset1D_3d(data.Dataset):
                             raise IOError
 
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-                        im = cv2.resize(im, self.output_shape)
+                        im = cv2.resize(im, self.output_shape,interpolation=cv2.INTER_CUBIC)
                         im = self.transform(im)
                         right_img = im
                         right_imgs[i,:,:,:] = right_img
@@ -70,13 +70,15 @@ class LRWdataset1D_3d(data.Dataset):
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
                         features = np.concatenate((melDelta, melFrames), axis=1)
                         right_lms = torch.FloatTensor(features)
+
+                        
                         image_path = self.train_data[wrong_index][i*3]
                         lms_path = self.train_data[wrong_index][1 + i*3]
                         im = cv2.imread(image_path.replace('.jpg', '#lip.jpg'))
                         if im is None:
                             raise IOError
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-                        im = cv2.resize(im, self.output_shape)
+                        im = cv2.resize(im, self.output_shape,interpolation=cv2.INTER_CUBIC)
                         im = self.transform(im)
                         wrong_img = im
                         zeroVecD = np.zeros((1, 64), dtype='f16')
@@ -130,7 +132,7 @@ class LRWdataset1D_3d(data.Dataset):
                         if im is None:
                             raise IOError
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-                        im = cv2.resize(im, self.output_shape)
+                        im = cv2.resize(im, self.output_shape,interpolation=cv2.INTER_CUBIC)
                         # im = Image.open(image_path.replace('.jpg', '#lip.jpg')).convert("RGB").resize(self.output_shape)
 
                         im = self.transform(im)
@@ -154,7 +156,7 @@ class LRWdataset1D_3d(data.Dataset):
                         if im is None:
                             raise IOError
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-                        im = cv2.resize(im, self.output_shape)
+                        im = cv2.resize(im, self.output_shape,interpolation=cv2.INTER_CUBIC)
                         # im = Image.open(image_path.replace('.jpg', '#lip.jpg')).convert("RGB").resize(self.output_shape)
 
                         im = self.transform(im)
