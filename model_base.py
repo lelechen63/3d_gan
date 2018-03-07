@@ -67,7 +67,7 @@ class Generator(nn.Module):
             conv2d(32,64,3,(1,2),1), #16,64
             conv2d(64,128,3,1,1), 
             conv2d(128,256,3,(1,2),1), # 16,32 
-            conv2d(256,512,3,(1,2),1), # 16,16
+            nn.MaxPool2d((1,2),(1,2)), # 16,16
         )
 
         if type(norm_layer) == functools.partial:
@@ -95,7 +95,7 @@ class Generator(nn.Module):
 
         norm_layer = nn.BatchNorm3d
         self.compress = nn.Sequential(
-            nn.Conv3d(ngf * 8 + 256, ngf * mult * 2, kernel_size=3,
+            nn.Conv3d(ngf * 8 , ngf * mult * 2, kernel_size=3,
                                 stride=1, padding=1, bias=use_bias),
             norm_layer(ngf * mult * 2),
             nn.ReLU(True)
@@ -149,16 +149,22 @@ class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
 
+        self.net_example = nn.Sequential(
+            conv2d(3, 64, 4, 2, 1, normalizer=None),
+            conv2d(64, 128, 4, 2, 1),
+            conv2d(128, 256, 4, 2, 1),
+            conv2d(256, 512, 4, 2, 1)
+            )
+
         self.audio_extractor = nn.Sequential(
             conv2d(1,32,3,1,1),
             conv2d(32,64,3,(1,2),1), #16,64
             conv2d(64,128,3,1,1), 
             conv2d(128,256,3,(1,2),1), # 16,32 
-            conv2d(256,512,3,(1,2),1), # 16,16
         )
         self.audio_fc= nn.Sequential(
             Flatten(),
-            nn.Linear(256*16*16,256),
+            nn.Linear(256*16*32,256),
             nn.ReLU(True)
         )
 
@@ -170,31 +176,70 @@ class Discriminator(nn.Module):
             conv3d(256, 512, 4, (1,2,2), 1)
         )
         #(512,1,4,4)
-        self.net_example = nn.Sequential(
-            conv2d(3, 64, 4, 2, 1, normalizer=None),
-            conv2d(64, 128, 4, 2, 1),
-            conv2d(128, 256, 4, 2, 1),
-            conv3d(256, 256, 4, 2, 1)
-            )
-
 
         self.net_joint = nn.Sequential(
-            conv3d(1024, 512, 3, 1, 1),
+            conv3d(512+256, 512, 3, 1, 1),
             conv3d(512, 1, (1,4,4), 1, 0, activation=nn.Sigmoid, normalizer=None)
         )
 
-    def forward(self,example_im, x, audio):
-        x = self.net_image(x)
-        audio = self.cnn_extractor(audio)
-        # audio = self.audio_fc(audio)
+    def forward(self, example_im, x, audio):
+        v = self.net_image(x)
+        audio = self.audio_extractor(audio)
+        audio = self.audio_fc(audio)
         audio = audio.view(audio.size(0), audio.size(1), 1, 1, 1)
-        audio = audio.repeat(1, 1, x.size(2), x.size(3),x.size(4))
-        example_im = self.net_example(example_im).unsqueeze(2)
-        out = torch.cat([example_im,x, audio], 1)
+        audio = audio.repeat(1, 1, v.size(2), v.size(3),v.size(4))
+        out = torch.cat([v, audio], 1)
         out = self.net_joint(out)
-        return out.view(out.size(0))
+        score1 = out.view(out.size(0))
+        
+        v2 = self.net_image(x)
+        example_im = self.net_example(example_im).unsqueeze(2)
+        out = torch.cat([v2,example_im], 1)
+        out = self.net_joint(out)
+        score2 = out.view(out.size(0))
 
+        return (score1 + score2) * 0.5
 
+class Discriminator2(nn.Module):
+    def __init__(self):
+        super(Discriminator2, self).__init__()
+
+        self.audio_extractor = nn.Sequential(
+            conv2d(1,32,3,1,1),
+            conv2d(32,64,3,(1,2),1), #16,64
+            conv2d(64,128,3,1,1), 
+            conv2d(128,256,3,(1,2),1), # 16,32 
+        )
+        self.audio_fc= nn.Sequential(
+            Flatten(),
+            nn.Linear(256*16*32,256),
+            nn.ReLU(True)
+        )
+
+       
+        self.net_image = nn.Sequential(
+            conv3d(3, 64, 4, (2,2,2), 1, normalizer=None),
+            conv3d(64, 128, 4, (2,2,2), 1),
+            conv3d(128, 256, 4, (2,2,2), 1),
+            conv3d(256, 512, 4, (1,2,2), 1)
+        )
+        #(512,1,4,4)
+
+        self.net_joint = nn.Sequential(
+            conv3d(512+256, 512, 3, 1, 1),
+            conv3d(512, 1, (1,4,4), 1, 0, activation=nn.Sigmoid, normalizer=None)
+        )
+
+    def forward(self, example_im, x, audio):
+        v = self.net_image(x)
+        audio = self.audio_extractor(audio)
+        audio = self.audio_fc(audio)
+        audio = audio.view(audio.size(0), audio.size(1), 1, 1, 1)
+        audio = audio.repeat(1, 1, v.size(2), v.size(3),v.size(4))
+        out = torch.cat([v, audio], 1)
+        out = self.net_joint(out)
+        return  out.view(out.size(0))
+       
 
 
 # a = torch.Tensor(1,3,16,64,64)

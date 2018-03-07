@@ -11,13 +11,13 @@ from torch.nn.modules.module import _addindent
 import numpy as np
 
 from dataset import  LRWdataset1D_3d as LRWdataset
-from model_base import Generator, Discriminator
+from model_base import Generator, Discriminator2
 from tensorboard_logger import configure, log_value
 # from embedding import Encoder
 class Trainer():
     def __init__(self, config):
-        self.generator =  Generator(config.cuda)
-        self.discriminator =  Discriminator(config.cuda)
+        self.generator =  Generator()
+        self.discriminator =  Discriminator2()
         # self.encoder = Encoder()
         # if config.perceptual:
         #     self.encoder.load_state_dict(torch.load('/mnt/disk1/dat/lchen63/lrw/model/embedding/encoder3_0.pth'))
@@ -92,37 +92,37 @@ class Trainer():
                 t1 = time.time()
 
                 if config.cuda:
-                    example_image = Variable(example_image.float()).cuda()
-                    example_lms = Variable(example_lms.float()).cuda()
-                    right_lmss = Variable(right_lmss.float()).cuda()
-                    right_imgs    = Variable(right_imgs.float()).cuda()
-                    wrong_imgs = Variable(wrong_imgs.float()).cuda()
-                    wrong_lmss = Variable(wrong_lmss.float()).cuda()
+                    example_image = Variable(example_image).cuda()
+                    example_lms = Variable(example_lms).cuda()
+                    right_lmss = Variable(right_lmss).cuda()
+                    right_imgs    = Variable(right_imgs).cuda()
+                    wrong_imgs = Variable(wrong_imgs).cuda()
+                    wrong_lmss = Variable(wrong_lmss).cuda()
 
 
                     
                 else:
-                    example_image = Variable(example_image.float())
-                    example_lms = Variable(example_lms.float())
-                    right_lmss = Variable(right_lmss.float())
-                    right_imgs    = Variable(right_imgs.float())
-                    wrong_imgs = Variable(wrong_imgs.float())
-                    wrong_lmss = Variable(wrong_lmss.float())
+                    example_image = Variable(example_image)
+                    example_lms = Variable(example_lms)
+                    right_lmss = Variable(right_lmss)
+                    right_imgs = Variable(right_imgs)
+                    wrong_imgs = Variable(wrong_imgs)
+                    wrong_lmss = Variable(wrong_lmss)
 
                     
                 
 
                 fake_im = self.generator(example_image, right_lmss)
-
+                real_im = right_imgs
                
 
                 #train the discriminator
 
-                D_real = self.discriminator(example_image,real_im,landmarks)
+                D_real = self.discriminator(example_image,real_im,right_lmss)
 
-                D_wrong = self.discriminator(example_image,real_im,wrong_landmarks)
+                D_wrong = self.discriminator(example_image,real_im,wrong_lmss)
 
-                D_fake = self.discriminator(example_image,fake_im.detach(),landmarks)
+                D_fake = self.discriminator(example_image,fake_im.detach(),right_lmss)
 
 
                 loss_real = self.bce_loss_fn(D_real, self.ones)
@@ -136,11 +136,10 @@ class Trainer():
 
 
                 # train the generator
-                fake_im = self.generator(example_lips, landmarks)
-                D_fake = self.discriminator(example_image,fake_im, landmarks)
+                fake_im = self.generator(example_image, right_lmss)
+                D_fake = self.discriminator(example_image,fake_im, right_lmss)
 
                 loss_gen = self.bce_loss_fn(D_fake, self.ones)
-                loss_gen = self.l1_loss_fn(fake_im,right_imgs)
                 loss = loss_gen
                 loss.backward()
                 self.opt_g.step()
