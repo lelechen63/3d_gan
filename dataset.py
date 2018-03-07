@@ -56,7 +56,7 @@ class LRWdataset1D_3d(data.Dataset):
                     for i in  range(0,16):
                         image_path = self.train_data[index][i*3]
                         lms_path = self.train_data[index][1 + i*3]
-                        im = cv2.imread(image_path.replace('.jpg', '#lip.jpg'))
+                        im = cv2.imread(image_path)
                         if im is None:
                             raise IOError
 
@@ -74,7 +74,7 @@ class LRWdataset1D_3d(data.Dataset):
 
                         image_path = self.train_data[wrong_index][i*3]
                         lms_path = self.train_data[wrong_index][1 + i*3]
-                        im = cv2.imread(image_path.replace('.jpg', '#lip.jpg'))
+                        im = cv2.imread(image_path)
                         if im is None:
                             raise IOError
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
@@ -127,7 +127,7 @@ class LRWdataset1D_3d(data.Dataset):
                         image_path = self.test_data[index][i*3]
                         lms_path = self.test_data[index][1 + i*3]
                         landmark_path = self.test_data[index][2 + i*3]
-                        im = cv2.imread(image_path.replace('.jpg', '#lip.jpg'))
+                        im = cv2.imread(image_path)
                         if im is None:
                             raise IOError
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
@@ -151,7 +151,7 @@ class LRWdataset1D_3d(data.Dataset):
                         image_path = self.train_data[wrong_index][i*3]
                         lms_path = self.train_data[wrong_index][1 + i*3]
                         # landmark_path = self.train_data[wrong_index][2 + i*3]
-                        im = cv2.imread(image_path.replace('.jpg', '#lip.jpg'))
+                        im = cv2.imread(image_path)
                         if im is None:
                             raise IOError
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
