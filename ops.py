@@ -3,8 +3,9 @@ import torchvision
 import torch.nn as nn
 import torch.nn.init as init
 from torch.autograd import Variable
-from pts3d import *
 import torch.nn.functional as F
+from __future__ import print_function
+from pts3d import conv3d
 
 
 class ResidualBlock(nn.Module):
@@ -21,12 +22,13 @@ class ResidualBlock(nn.Module):
     def forward(self, x):
         residual = x
         out = self.block(x)
-        print residual.size()
-        print x.size()
-        print '-----'
+        print(residual.size())
+        print(x.size())
+        print('-----')
         out += residual
         out = self.lrelu(out)
         return out
+
 
 def linear(channel_in, channel_out,
            activation=nn.ReLU,
@@ -97,28 +99,6 @@ def _apply(layer, activation, normalizer, channel_out=None):
     if activation:
         layer.append(activation())
     return layer
-
-
-def warp(input, flow):
-    """warp function including two steps:
-        
-    
-    Arguments:
-        input torch.Tensor -- input to be warped; shape: (B*C*H*W)
-        flow torch.Tensor -- optical flow; shape: (B*2*H*W)
-    """
-    assert flow.size(1) == 2
-    B, H, W = flow.size(0), flow.size(2), flow.size(3)
-    flow[:, 0, :, :] = flow[:, 0, :, :] / H * 2
-    flow[:, 1, :, :] = flow[:, 1, :, :] / W * 2
-    
-    h_coordinate = torch.linspace(-1, 1, H).view(1, 1, H, 1)
-    w_coordinate = torch.linspace(-1, 1, W).view(1, 1, 1, W)
-
-    grid_h = h_coordinate.expand(B, 1, H, W)
-    grid_w = w_coordinate.expand(B, 1, H, W)
-
-    grid = torch.cat([grid_h, grid_w], 1) + flow
 
 
 class Warp(nn.Module):
