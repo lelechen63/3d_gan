@@ -4,6 +4,7 @@ from pts3d import *
 from ops import *
 import torchvision.models as models
 
+import functools
 
 class Flatten(nn.Module):
     def forward(self, input):
