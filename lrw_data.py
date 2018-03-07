@@ -758,7 +758,7 @@ def generate_video_16_pickle(datalists=None):
 datalists = get_data()
 # print datalists
 # generate_image_pickle(datalists)
-generate_video_16_pickle(datalists)
+# generate_video_16_pickle(datalists)
 
 # with open('/home/lele/Music/text-to-image.pytorch/data/train.pkl', 'rb') as handle:
 #     b = pickle.load(handle)
