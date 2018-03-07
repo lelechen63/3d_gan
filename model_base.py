@@ -191,6 +191,7 @@ class Discriminator(nn.Module):
         out = torch.cat([v, audio], 1)
         out = self.net_joint(out)
         score1 = out.view(out.size(0))
+        
         v2 = self.net_image(x)
         example_im = self.net_example(example_im).unsqueeze(2)
         out = torch.cat([v2,example_im], 1)

@@ -49,58 +49,36 @@ class LRWdataset1D_3d(data.Dataset):
                     #load righ img
                     right_imgs = torch.FloatTensor(16,3,64,64)
                     right_lmss = torch.FloatTensor(1,16,128)
-                    # right_landmarks = torch.FloatTensor(8,68,2)
 
                     wrong_imgs = torch.FloatTensor(16,3,64,64)
                     wrong_lmss = torch.FloatTensor(1, 16,128)
-                    # wrong_landmark = torch.FloatTensor(8,68,2)
 
                     for i in  range(0,16):
-                        # print '======'
-                        # print index
-                        # print i*3
-                        # print len(self.train_data)
-                        # print len(self.train_data[index])
-                        # print '+++++++++++++++++'
-
                         image_path = self.train_data[index][i*3]
                         lms_path = self.train_data[index][1 + i*3]
-                        # landmark_path = self.train_data[index][2 + i*3]
                         im = cv2.imread(image_path.replace('.jpg', '#lip.jpg'))
                         if im is None:
                             raise IOError
 
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-                        # im = Image.open(image_path.replace('.jpg', '#lip.jpg')).convert("RGB").resize(self.output_shape)
                         im = cv2.resize(im, self.output_shape)
                         im = self.transform(im)
                         right_img = im
-                        # right_landmark = torch.FloatTensor(np.load(landmark_path))
-                        right_lms = torch.FloatTensor(np.load(lms_path))
                         right_imgs[i,:,:,:] = right_img
-                        # right_landmarks[i,:,:] =  right_landmark
                         zeroVecD = np.zeros((1, 64), dtype='f16')
                         melFrames = np.transpose(np.load(lms_path))
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
                         features = np.concatenate((melDelta, melFrames), axis=1)
                         right_lms = torch.FloatTensor(features)
-
-                        
-
-
                         image_path = self.train_data[wrong_index][i*3]
                         lms_path = self.train_data[wrong_index][1 + i*3]
-                        # landmark_path = self.train_data[wrong_index][2 + i*3]
                         im = cv2.imread(image_path.replace('.jpg', '#lip.jpg'))
                         if im is None:
                             raise IOError
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
                         im = cv2.resize(im, self.output_shape)
-                        # im = Image.open(image_path.replace('.jpg', '#lip.jpg')).convert("RGB").resize(self.output_shape)
-
                         im = self.transform(im)
                         wrong_img = im
-                        # wrong_landmark = torch.FloatTensor(np.load(landmark_path))
                         zeroVecD = np.zeros((1, 64), dtype='f16')
                         melFrames = np.transpose(np.load(lms_path))
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)

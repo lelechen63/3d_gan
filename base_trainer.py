@@ -92,22 +92,22 @@ class Trainer():
                 t1 = time.time()
 
                 if config.cuda:
-                    example_image = Variable(example_image.float()).cuda()
-                    example_lms = Variable(example_lms.float()).cuda()
-                    right_lmss = Variable(right_lmss.float()).cuda()
-                    right_imgs    = Variable(right_imgs.float()).cuda()
-                    wrong_imgs = Variable(wrong_imgs.float()).cuda()
-                    wrong_lmss = Variable(wrong_lmss.float()).cuda()
+                    example_image = Variable(example_image).cuda()
+                    example_lms = Variable(example_lms).cuda()
+                    right_lmss = Variable(right_lmss).cuda()
+                    right_imgs    = Variable(right_imgs).cuda()
+                    wrong_imgs = Variable(wrong_imgs).cuda()
+                    wrong_lmss = Variable(wrong_lmss).cuda()
 
 
                     
                 else:
-                    example_image = Variable(example_image.float())
-                    example_lms = Variable(example_lms.float())
-                    right_lmss = Variable(right_lmss.float())
-                    right_imgs = Variable(right_imgs.float())
-                    wrong_imgs = Variable(wrong_imgs.float())
-                    wrong_lmss = Variable(wrong_lmss.float())
+                    example_image = Variable(example_image)
+                    example_lms = Variable(example_lms)
+                    right_lmss = Variable(right_lmss)
+                    right_imgs = Variable(right_imgs)
+                    wrong_imgs = Variable(wrong_imgs)
+                    wrong_lmss = Variable(wrong_lmss)
 
                     
                 
