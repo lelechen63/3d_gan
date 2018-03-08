@@ -15,7 +15,7 @@ def lms_trend():
 		# lmsname = root +'lms/' + temp[-3] + '/' + temp[-2] + 
 		lms_folder_name = line.replace('video','lms')[:-4] 
 		previsous = None
-		temp = []
+		tt = []
 		for i in range(1,30):
 			frame = lms_folder_name + '/' + temp[-1][:-4] + '_%3d.npy'%i
 			# previous_f = lms_folder_name + '/' + temp[-1][:-4] + '_%3d.npy'%(i-1)
@@ -23,11 +23,11 @@ def lms_trend():
 				previous = np.average(np.load(frame))
 			else:
 				cur = np.average(np.load(frame))
-				temp.append(cur - previous)
+				tt.append(cur - previous)
 				previous = cur
-		print len(temp)
-		print temp
-		trend[videoname] = temp
+		print len(tt)
+		print tt
+		trend[videoname] = tt
 		print count
 		count += 1
 		if count == 100:
