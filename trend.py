@@ -3,7 +3,7 @@ root = '/mnt/disk1/dat/lchen63/lrw/data/'
 import pickle
 def lms_trend():
 	trend = {}
-	txt = open(root  + 'image.txt','r')
+	txt = open(root  + 'prefix.txt','r')
 	lmss = []
 	count = 0 
 	for line in txt:
