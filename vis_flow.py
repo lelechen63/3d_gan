@@ -16,22 +16,30 @@ def visualize_of(flow):
 
 
 root = '/mnt/disk1/dat/lchen63/lrw/data/regions'
-save_root = '/home/zhiheng/lipmotion/vis_flow_full_face'
+save_root = '/home/zhiheng/lipmotion/vis_flow_only_lips'
 
 # ABOUT_00001_001.jpg
 
 for root, subdirs, files in os.walk(root):
     for file in files:
-        if file.endswith('.jpg') and not file.endswith('#lip.jpg'):
-            cur_id = int(file[-7, -4])
+        # if file.endswith('.jpg') and not file.endswith('#lip.jpg'):
+        if file.endswith('#lip.jpg'):
+            cur_id = int(file[-11: -8])
             if cur_id > 29:
                 continue
             cur_filepath = os.path.join(root, file)
-            next_filepath = os.path.join(root, file[:-7] + '%03d.jpg' % cur_id+1)
-            cur_img = cv2.imread(cur_filepath, cv2.IMREAD_GRAYSCALE)
-            next_img = cv2.imread(next_filepath, cv2.IMREAD_GRAYSCALE)
+            next_filepath = os.path.join(root, file[:-11] + '%03d.jpg' % (cur_id+1))
+            if not os.path.exists(next_filepath):
+                continue
+            cur_img = cv2.imread(cur_filepath)
+            next_img = cv2.imread(next_filepath)
+            cur_img = cv2.resize(cur_img, (64, 64))
+            next_img = cv2.resize(next_img, (64, 64))
+            cur_img = cv2.cvtColor(cur_img, cv2.COLOR_BGR2GRAY)
+            next_img = cv2.cvtColor(next_img, cv2.COLOR_BGR2GRAY)
+
             flow = cv2.calcOpticalFlowFarneback(cur_img, next_img, None, 0.5, 3, 15, 3, 5, 1.2, 0)
             bgr = visualize_of(flow)
 
             cv2.imwrite(os.path.join(save_root, file), bgr)
-            
+
