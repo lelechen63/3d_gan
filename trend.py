@@ -14,7 +14,7 @@ def lms_trend():
 		videoname = line
 		# lmsname = root +'lms/' + temp[-3] + '/' + temp[-2] + 
 		lms_folder_name = line.replace('video','lms')[:-4] 
-		previsous = None
+		previous = None
 		tt = []
 		for i in range(1,30):
 			frame = lms_folder_name + '/' + temp[-1][:-4] + '_%3d.npy'%i
