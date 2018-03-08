@@ -11,8 +11,6 @@ def worker(line):
     line = line.replace('lipread_vgg', 'lrw')
     frames_folder = line.split('.')[0]
     frame_paths = sorted([f for f in os.listdir(frames_folder) if f.endswith('#lip.jpg')])
-    
-    assert len(frame_paths) > 0
 
     prev = None
     mean_flows = []
@@ -32,8 +30,6 @@ def worker(line):
 
 with open('/mnt/disk1/dat/lchen63/lrw/data/prefix2.txt') as f:
     lines = f.readlines()
-    for line in lines:
-        worker(line)
-    # pool = Pool(40)
-    # result = pool.map(worker, lines)
-    # pickle.dump(result, open('of_result.pkl', 'w+'), True)
+    pool = Pool(40)
+    result = pool.map(worker, lines)
+    pickle.dump(result, open('of_result.pkl', 'w+'), True)
