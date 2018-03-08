@@ -1,11 +1,22 @@
 import numpy as np
 root = '/mnt/disk1/dat/lchen63/lrw/data/'
 import pickle
+import random
+
 def lms_trend():
 	trend = {}
 	txt = open(root  + 'prefix.txt','r')
 	lmss = []
-	count = 0 
+	count = 0
+
+	txt_t = [] 
+	for line in txt:
+		txt_t.append(line)
+	random.shuffle(txt_t)
+	new = open(root + 'prefix2.txt','w')
+	for i in range(int(len(txt_t)/10)):
+		new.write(txt_t[i])
+
 	for line in txt:
 		line = line[:-1].replace('lipread_vgg', 'lrw')
 		temp = line.split('/')
@@ -24,7 +35,7 @@ def lms_trend():
 		trend[videoname] = tt
 		print count
 		count += 1
-		if count == 10000:
+		if count == 10:
 			break
 	with open('/mnt/disk1/dat/lchen63/lrw/data/pickle/trend_lms.pkl', 'wb') as handle:
 	    pickle.dump(trend, handle, protocol=pickle.HIGHEST_PROTOCOL)
