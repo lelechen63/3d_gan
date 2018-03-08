@@ -5,17 +5,15 @@ import random
 
 def lms_trend():
 	trend = {}
-	txt = open(root  + 'prefix.txt','r')
-	lmss = []
+	# txt = open(root  + 'prefix.txt','r')
 	count = 0
-
-	txt_t = [] 
-	for line in txt:
-		txt_t.append(line)
-	random.shuffle(txt_t)
-	new = open(root + 'prefix2.txt','w')
-	for i in range(int(len(txt_t)/10)):
-		new.write(txt_t[i])
+	# txt_t = [] 
+	# for line in txt:
+	# 	txt_t.append(line)
+	# random.shuffle(txt_t)
+	# new = open(root + 'prefix2.txt','w')
+	# for i in range(int(len(txt_t)/10)):
+	# 	new.write(txt_t[i])
 
 	for line in open(root + 'prefix2.txt','r'):
 		line = line[:-1].replace('lipread_vgg', 'lrw')
@@ -33,10 +31,10 @@ def lms_trend():
 				tt.append(cur - previous)
 				previous = cur
 		trend[videoname] = tt
-		print count
+		print '{}/53876'.format(count) 
 		count += 1
-		if count == 10:
-			break
+		# if count == 10:
+		# 	break
 	with open('/mnt/disk1/dat/lchen63/lrw/data/pickle/trend_lms.pkl', 'wb') as handle:
 	    pickle.dump(trend, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
