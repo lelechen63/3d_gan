@@ -5,17 +5,15 @@ import random
 
 def lms_trend():
 	trend = {}
-	txt = open(root  + 'prefix.txt','r')
-	lmss = []
+	# txt = open(root  + 'prefix.txt','r')
 	count = 0
-
-	txt_t = [] 
-	for line in txt:
-		txt_t.append(line)
-	random.shuffle(txt_t)
-	new = open(root + 'prefix2.txt','w')
-	for i in range(int(len(txt_t)/10)):
-		new.write(txt_t[i])
+	# txt_t = [] 
+	# for line in txt:
+	# 	txt_t.append(line)
+	# random.shuffle(txt_t)
+	# new = open(root + 'prefix2.txt','w')
+	# for i in range(int(len(txt_t)/10)):
+	# 	new.write(txt_t[i])
 
 	for line in open(root + 'prefix2.txt','r'):
 		line = line[:-1].replace('lipread_vgg', 'lrw')
