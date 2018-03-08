@@ -13,6 +13,8 @@ def lms_trend():
 	for line in txt:
 		txt_t.append(line)
 	random.shuffle(txt_t)
+	print len(txt_t)
+	print '+++'
 	new = open(root + 'prefix2.txt','w')
 	for i in range(int(len(txt_t)/10)):
 		new.write(txt_t[i])
