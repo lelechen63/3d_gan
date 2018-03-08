@@ -17,7 +17,7 @@ def worker(line):
     prev = None
     mean_flows = []
     for frame_path in frame_paths:
-        cur = cv2.imread(frame_path)
+        cur = cv2.imread(os.path.join(frames_folder, frame_path))
         cur = cv2.cvtColor(cur, cv2.COLOR_BGR2GRAY)
         if not prev is None:
             flow = cv2.calcOpticalFlowFarneback(prev, cur, None, 0.5, 3, 15, 3, 5, 1.2, 0)
