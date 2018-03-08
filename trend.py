@@ -9,6 +9,8 @@ def lms_trend():
 	for line in txt:
 		line = line[:-1].replace('lipread_vgg', 'lrw')
 		temp = line.split('/')
+		print temp
+		print temp[-1]
 		videoname = line
 		# lmsname = root +'lms/' + temp[-3] + '/' + temp[-2] + 
 		lms_folder_name = line.replace('video','lms')[:-4] 
