@@ -2,6 +2,7 @@ import os
 import cv2
 from multiprocessing import Pool
 import cPickle as pickle
+import numpy as np
 
 
 def worker(line):
@@ -11,13 +12,16 @@ def worker(line):
     frames_folder = line.split('.')[0]
     frame_paths = sorted([f for f in os.listdir(frames_folder) if f.endswith('#lip.jpg')])
     
+    assert len(frame_paths) > 0
+
     prev = None
     mean_flows = []
     for frame_path in frame_paths:
         cur = cv2.imread(frame_path)
+        cur = cv2.cvtColor(cur, cv2.COLOR_BGR2GRAY)
         if not prev is None:
             flow = cv2.calcOpticalFlowFarneback(prev, cur, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-            displacements = np.sqrt(of[:, :, 0]**2 + of[:, :, 1]**2)
+            displacements = np.sqrt(flow[:, :, 0]**2 + flow[:, :, 1]**2)
             value = np.mean(displacements)
             mean_flows.append(value)                
         prev = cur
@@ -27,6 +31,8 @@ def worker(line):
 
 with open('/mnt/disk1/dat/lchen63/lrw/data/prefix2.txt') as f:
     lines = f.readlines()
-    pool = Pool(40)
-    result = pool.map(worker, lines)
-    pickle.dump(result, open('of_result.pkl', 'w+'), True)
+    for line in lines:
+        worker(line)
+    # pool = Pool(40)
+    # result = pool.map(worker, lines)
+    # pickle.dump(result, open('of_result.pkl', 'w+'), True)
