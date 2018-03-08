@@ -31,10 +31,10 @@ def lms_trend():
 				tt.append(cur - previous)
 				previous = cur
 		trend[videoname] = tt
-		print count
+		print '{}/53876'.format(count) 
 		count += 1
-		if count == 10:
-			break
+		# if count == 10:
+		# 	break
 	with open('/mnt/disk1/dat/lchen63/lrw/data/pickle/trend_lms.pkl', 'wb') as handle:
 	    pickle.dump(trend, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
