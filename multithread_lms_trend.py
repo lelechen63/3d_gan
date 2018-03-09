@@ -2,44 +2,38 @@ import numpy as np
 root = '/mnt/disk1/dat/lchen63/lrw/data/'
 import pickle
 import random
+from multiprocessing import Pool
+
+def worker(line):
+	line = line[:-1].replace('lipread_vgg', 'lrw')
+	temp = line.split('/')
+	videoname = line
+	lms_folder_name = line.replace('video', 'lms')[:-4]
+	previous = None
+	tt = []
+	for i in range(1, 30):
+		frame = lms_folder_name + '/' + temp[-1][:-4] + '_%03d.npy' % i
+		if previous == None:
+			previous = np.average(np.load(frame))
+		else:
+			cur = np.average(np.load(frame))
+			tt.append(cur - previous)
+			previous = cur
+	print(videoname)
+	return tt
 
 def lms_trend():
-	trend = {}
-	# txt = open(root  + 'prefix.txt','r')
-	count = 0
-	# txt_t = [] 
-	# for line in txt:
-	# 	txt_t.append(line)
-	# random.shuffle(txt_t)
-	# new = open(root + 'prefix2.txt','w')
-	# for i in range(int(len(txt_t)/10)):
-	# 	new.write(txt_t[i])
+    with open(root + 'prefix2.txt', 'r') as f:
+		lines = f.readlines()
+		pool = Pool(40)
+		result = dict(pool.map(lines))
 
-	for line in open(root + 'prefix2.txt','r'):
-		line = line[:-1].replace('lipread_vgg', 'lrw')
-		temp = line.split('/')
-		videoname = line
-		lms_folder_name = line.replace('video','lms')[:-4] 
-		previous = None
-		tt = []
-		for i in range(1,30):
-			frame = lms_folder_name + '/' + temp[-1][:-4] + '_%03d.npy'%i
-			if previous == None:
-				previous = np.average(np.load(frame))
-			else:
-				cur = np.average(np.load(frame))
-				tt.append(cur - previous)
-				previous = cur
-		trend[videoname] = tt
-		print '{}/53876'.format(count) 
-		count += 1
-		# if count == 10:
-		# 	break
-	with open('/mnt/disk1/dat/lchen63/lrw/data/pickle/trend_lms.pkl', 'wb') as handle:
-	    pickle.dump(trend, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        # if count == 10:
+        # 	break
+    with open('/mnt/disk1/dat/lchen63/lrw/data/pickle/trend_lms.pkl', 'wb') as handle:
+        pickle.dump(result, handle)
 
 lms_trend()
-
 
 
 # ###########################################################################################
@@ -64,13 +58,7 @@ lms_trend()
 #     x = np.arange(flow.shape[0])
 #     print flow.shape
 #     print aud.shape
-#     print x   
+#     print x
 #     plt.plot(x,flow,'r--',x,aud,'g-')
 #     plt.savefig('/mnt/disk1/dat/lchen63/grid/data/trend/'+ vname + '.jpg')
 #     plt.gcf().clear()
-
-
-
-
-
-
