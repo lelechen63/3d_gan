@@ -64,8 +64,12 @@ class LRWdataset1D_3d(data.Dataset):
                         im = cv2.resize(im, self.output_shape)
                         im = self.transform(im)
                         right_imgs[i,:,:,:] = im
+                        
                         zeroVecD = np.zeros((1, 64), dtype='f16')
                         melFrames = np.transpose(np.load(lms_path))
+                        print  melFrames
+                        print '++++++++++++++++++'
+
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
                         features = np.concatenate((melDelta, melFrames), axis=1)
                         right_lms = torch.FloatTensor(features)
@@ -80,6 +84,7 @@ class LRWdataset1D_3d(data.Dataset):
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
                         im = cv2.resize(im, self.output_shape)
                         im = self.transform(im)
+
                         zeroVecD = np.zeros((1, 64), dtype='f16')
                         melFrames = np.transpose(np.load(lms_path))
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
