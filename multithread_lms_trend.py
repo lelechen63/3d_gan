@@ -26,7 +26,7 @@ def lms_trend():
     with open(root + 'prefix2.txt', 'r') as f:
 		lines = f.readlines()
 		pool = Pool(40)
-		result = dict(pool.map(lines))
+		result = dict(pool.map(worker, lines))
 
         # if count == 10:
         # 	break
