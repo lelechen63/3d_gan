@@ -67,8 +67,8 @@ class LRWdataset1D_3d(data.Dataset):
                         
                         zeroVecD = np.zeros((1, 64), dtype='f16')
                         melFrames = np.transpose(np.load(lms_path))
-                        print  melFrames
-                        print '++++++++++++++++++'
+                        if np.isinf(melFrames[0][0] ):
+                            raise IOError
 
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
                         features = np.concatenate((melDelta, melFrames), axis=1)
