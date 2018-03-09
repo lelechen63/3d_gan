@@ -17,16 +17,22 @@ def worker(line):
 			previous = np.average(np.load(frame))
 		else:
 			cur = np.average(np.load(frame))
+			if np.any(np.isinf(cur)):
+    			import pdb; pdb.set_trace()
 			tt.append(cur - previous)
 			previous = cur
 	print(videoname)
-	return tt
+	return videoname, tt
 
 def lms_trend():
     with open(root + 'prefix2.txt', 'r') as f:
 		lines = f.readlines()
-		pool = Pool(40)
-		result = dict(pool.map(worker, lines))
+		result = dict
+		for line in lines:
+    		videoname, tt = worker(line)
+			result[videoname, tt]
+		# pool = Pool(40)
+		# result = dict(pool.map(worker, lines))
 
         # if count == 10:
         # 	break
