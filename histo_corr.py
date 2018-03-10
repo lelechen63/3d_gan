@@ -31,7 +31,9 @@ if __name__ == '__main__':
     #                     if not np.any(np.isinf(audio_deri_dict[video_name]))]
     input_lst = []
     for video_name, audio_deri in audio_deri_dict.iteritems():
-        if np.any(np.isinf(audio_deri)) or not flow_dict.has_key(video_name):
+        if np.any(np.isinf(audio_deri)):
+            continue
+        if not not flow_dict.has_key(video_name):
             continue
         
         flows = flow_dict[video_name]
