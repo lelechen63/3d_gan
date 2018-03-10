@@ -178,3 +178,4 @@ venv.bak/
 # End of https://www.gitignore.io/api/python,pycharm,visualstudiocode
 
 of_result.pkl
+run_retina.sh
