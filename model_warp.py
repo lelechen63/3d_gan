@@ -67,15 +67,15 @@ class Generator(nn.Module):
         norm_layer = nn.BatchNorm2d
 
         self.audio_extractor = nn.Sequential(
-            conv2d(1, 32, 3, 1, 1),
-            conv2d(32, 64, 3, 1, 1),
-            conv2d(64, 128, 3, (1, 2), 1),
-            conv2d(128, 256, 3, 1, 1)  # 16,64
+            conv2d(1, 16, 3, 1, 1),
+            conv2d(16, 32, 3, 1, 1),
+            conv2d(32, 64, 3, (1, 2), 1),
+            conv2d(64, 64, 3, 1, 1)  # 16,64
         )
 
         self.flow_predictor = nn.Sequential(
-            conv3d(768, 64, 3, 1, 1),
-            conv3d(64, 16, 3, 1, 1),
+            conv3d(576, 32, 3, 1, 1),
+            conv3d(32, 16, 3, 1, 1),
             conv3d(16, 4, 3, 1, 1),
             conv3d(4, 2, 3, 1, 1)
         )
