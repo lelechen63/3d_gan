@@ -1,4 +1,5 @@
 import pickle
+import numpy as np
 a = '/mnt/disk1/dat/lchen63/lrw/data/pickle/new_video_16_test.pkl'
 _file = open(a, "rb")
 train_data = pickle.load(_file)
