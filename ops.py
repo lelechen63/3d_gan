@@ -116,8 +116,8 @@ class Warp3D(nn.Module):
         self.flow_size = flow_size
         B, C, T, H, W = flow_size
         assert C == 2
-        h_coordinate = torch.linspace(-1.0, 1.0, H).view(1, 1, 1, H, 1)
-        w_coordinate = torch.linspace(-1.0, 1.0, W).view(1, 1, 1, 1, W)
+        h_coordinate = torch.linspace(-1.0, 1.0, H).view(1, 1, 1, H, 1).cuda()
+        w_coordinate = torch.linspace(-1.0, 1.0, W).view(1, 1, 1, 1, W).cuda()
 
         grid_h = h_coordinate.repeat(B, 1, T, 1, W)
         grid_w = w_coordinate.repeat(B, 1, T, H, 1)
@@ -128,7 +128,7 @@ class Warp3D(nn.Module):
         assert flows.size() == self.flow_size
         flows[:, 0, :, :, :] = flows[:, 0, :, :] / float(self.flow_size[3]) * 2
         flows[:, 1, :, :, :] = flows[:, 1, :, :] / float(self.flow_size[4]) * 2
-        import pdb; pdb.set_trace()
+
         grids = self.grid_coordinate + flows
         grids = grids.permute(0, 2, 3, 4, 1)  # NCTHW ==> NTHWC
 
