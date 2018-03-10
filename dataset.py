@@ -1,6 +1,6 @@
 import os
 import random
-import pickle
+import cPickle as pickle
 import numpy as np
 import cv2
 import torch

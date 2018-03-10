@@ -1,6 +1,6 @@
 import numpy as np
 root = '/mnt/disk1/dat/lchen63/lrw/data/'
-import pickle
+import cPickle as pickle
 import random
 from multiprocessing import Pool
 
