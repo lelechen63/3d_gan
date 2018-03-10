@@ -1,7 +1,7 @@
 import pickle
 a = '/mnt/disk1/dat/lchen63/lrw/data/pickle/new_video_16_test.pkl'
-
-train_data = pickle.load(a)
+ _file = open(os.path.join(a, "rb")
+train_data = pickle.load(_file)
 count = 0
 total = len(train_data)
 for inx in range(len(train_data)):
