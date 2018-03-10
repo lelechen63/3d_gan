@@ -76,7 +76,7 @@ class Generator(nn.Module):
         n_downsampling = 3
 
         self.flow_predictor = nn.Sequential(
-            conv3d(ngf * 2**n_downsampling * 2 + 128, 32, 3, 1, 1),
+            conv3d(ngf * 2**n_downsampling + 128, 32, 3, 1, 1),
             conv3d(32, 16, 3, 1, 1),
             conv3d(16, 4, 3, 1, 1),
             conv3d(4, 2, 3, 1, 1)
