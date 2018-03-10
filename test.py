@@ -1,5 +1,5 @@
 import os
-import pickle
+import cPickle as pickle
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import glob

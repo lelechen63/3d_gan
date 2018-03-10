@@ -43,13 +43,14 @@ def linear(channel_in, channel_out,
 def conv3d(channel_in, channel_out,
            ksize=3, stride=1, padding=1,
            activation=nn.ReLU,
-           normalizer=nn.BatchNorm3d):
+           normalizer=nn.BatchNorm3d,
+           groups=1):
     layer = list()
     bias = True if not normalizer else False
 
     layer.append(nn.Conv3d(channel_in, channel_out,
                      ksize, stride, padding,
-                     bias=bias))
+                     bias=bias, groups=groups))
     _apply(layer, activation, normalizer, channel_out)
     init.kaiming_normal(layer[0].weight)
 
