@@ -76,10 +76,10 @@ class Generator(nn.Module):
         n_downsampling = 3
 
         self.flow_predictor = nn.Sequential(
-            conv3d(ngf * 2**n_downsampling + 256, 128, 3, 1, 1, group=2),
-            conv3d(128, 64, 3, 1, 1, group=2),
-            conv3d(64, 16, 3, 1, 1, group=2),
-            conv3d(16, 2, 3, 1, 1, group=2)
+            conv3d(ngf * 2**n_downsampling + 256, 128, 3, 1, 1, groups=2),
+            conv3d(128, 64, 3, 1, 1, groups=2),
+            conv3d(64, 16, 3, 1, 1, groups=2),
+            conv3d(16, 2, 3, 1, 1, groups=2)
         )
         self.warp3d = Warp3D()
 
