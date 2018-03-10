@@ -58,7 +58,7 @@ class ResnetBlock(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, batch_size, input_nc=3, output_nc=3, ngf=8, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=9, padding_type='zero'):
+    def __init__(self, batch_size, input_nc=3, output_nc=3, ngf=16, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=9, padding_type='zero'):
         assert(n_blocks >= 0)
         super(Generator, self).__init__()
         self.input_nc = input_nc
@@ -67,14 +67,16 @@ class Generator(nn.Module):
         norm_layer = nn.BatchNorm2d
 
         self.audio_extractor = nn.Sequential(
-            conv2d(1, 16, 3, 1, 1),
-            conv2d(16, 32, 3, 1, 1),
-            conv2d(32, 64, 3, (1, 2), 1),
-            conv2d(64, 64, 3, 1, 1)  # 16,64
+            conv2d(1, 32, 3, 1, 1),
+            conv2d(64, 128, 3, 1, 1),
+            conv2d(128, 128, 3, (1, 2), 1),
+            conv2d(128, 128, 3, 1, 1)  # 16,64
         )
 
+        n_downsampling = 3
+
         self.flow_predictor = nn.Sequential(
-            conv3d(128, 32, 3, 1, 1),
+            conv3d(ngf * 2**n_downsampling * 2 + 128, 32, 3, 1, 1),
             conv3d(32, 16, 3, 1, 1),
             conv3d(16, 4, 3, 1, 1),
             conv3d(4, 2, 3, 1, 1)
@@ -92,7 +94,6 @@ class Generator(nn.Module):
                  norm_layer(ngf),
                  nn.ReLU(True)]
 
-        n_downsampling = 3
         for i in range(n_downsampling):
             mult = 2**i
             model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3,
@@ -134,7 +135,7 @@ class Generator(nn.Module):
     def forward(self, input, audio):
         image_feature = self.image_encoder(
             input).unsqueeze(2).repeat(1, 1, 16, 1, 1)
-        audio_feature = self.audio_extractor(audio).view(-1, 64, 16, 8, 8)
+        audio_feature = self.audio_extractor(audio).view(-1, 128, 16, 8, 8)
 
         fused_feature = torch.cat([image_feature, audio_feature], 1)
         flows = self.flow_predictor(fused_feature)
