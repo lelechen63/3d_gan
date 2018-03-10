@@ -20,7 +20,7 @@ if __name__ == '__main__':
     figure_output_file = '/home/zhiheng/lipmotion/3d_gan/corr_histo.png'
 
     audio_deri_dict = pickle.load(open(audio_deri_f_path))
-    flow_dict = pickle.load(open(flow_f_path))
+    flow_dict = dict(pickle.load(open(flow_f_path)))
     
     print('audio derivative dict length: {}'.format(len(audio_deri_dict)))
     print('flow dict length {}'.format(len(flow_dict)))
