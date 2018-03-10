@@ -6,7 +6,7 @@ train_data = pickle.load(_file)
 count = 0
 total = len(train_data)
 for index in range(len(train_data)):
-	for i in  range(0,16):SS
+	for i in  range(0,16):
 		lms_path = train_data[index][1 + i*3]
 		melFrames = np.transpose(np.load(lms_path))
         if np.any(np.isinf(melFrames)):
