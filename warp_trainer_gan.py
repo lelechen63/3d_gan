@@ -36,14 +36,14 @@ def init_weights(net, init_type='kaiming'):
         net.apply(weights_init_kaiming)
 
     else:
-        raise NotImple
+        raise NotImplementedError
 
 # from embedding import Encoder
 
 
 class Trainer():
     def __init__(self, config):
-        self.generator = Generator()
+        self.generator = Generator(config.batch_size)
         self.discriminator = Discriminator2()
         # self.encoder = Encoder()
         # if config.perceptual:
