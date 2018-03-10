@@ -119,8 +119,8 @@ class Warp3D(nn.Module):
         h_coordinate = torch.linspace(-1.0, 1.0, H).view(1, 1, 1, H, 1)
         w_coordinate = torch.linspace(-1.0, 1.0, W).view(1, 1, 1, 1, W)
 
-        grid_h = h_coordinate.repeat(B, 1, T, H, W)
-        grid_w = w_coordinate.repeat(B, 1, T, H, W)
+        grid_h = h_coordinate.repeat(B, 1, T, 1, W)
+        grid_w = w_coordinate.repeat(B, 1, T, H, 1)
 
         self.grid_coordinate = Variable(torch.cat([grid_w, grid_h], 1))
     
