@@ -134,7 +134,7 @@ class Generator(nn.Module):
     def forward(self, input, audio):
         image_feature = self.image_encoder(
             input).unsqueeze(2).repeat(1, 1, 16, 1, 1)
-        audio_feature = self.audio_extractor(audio).view(-1, 256, 8, 8)
+        audio_feature = self.audio_extractor(audio).view(-1, 256, 16, 8, 8)
 
         import pdb; pdb.set_trace()
         fused_feature = torch.cat([image_feature, audio_feature], 1)
