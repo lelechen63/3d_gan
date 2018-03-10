@@ -79,7 +79,7 @@ class Generator(nn.Module):
             conv3d(16, 4, 3, 1, 1),
             conv3d(4, 2, 3, 1, 1)
         )
-        self.warp3d = Warp3D((batch_size, 2, 16, 8, 8))
+        self.warp3d = Warp3D()
 
         if type(norm_layer) == functools.partial:
             use_bias = norm_layer.func == nn.InstanceNorm2d

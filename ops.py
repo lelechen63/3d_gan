@@ -102,7 +102,7 @@ def _apply(layer, activation, normalizer, channel_out=None):
 
 
 class Warp3D(nn.Module):
-    def __init__(self, flow_size):
+    def __init__(self):
         """Implementation of warping module including two steps:
             1. convert flow to sampling grid
             2. call grid_sample in PyTorch
@@ -113,19 +113,19 @@ class Warp3D(nn.Module):
         """
 
         super(Warp3D, self).__init__()
-        self.flow_size = flow_size
-        B, C, T, H, W = flow_size
-        assert C == 2
-        h_coordinate = torch.linspace(-1.0, 1.0, H).view(1, 1, 1, H, 1).cuda()
-        w_coordinate = torch.linspace(-1.0, 1.0, W).view(1, 1, 1, 1, W).cuda()
-
-        grid_h = h_coordinate.repeat(B, 1, T, 1, W)
-        grid_w = w_coordinate.repeat(B, 1, T, H, 1)
-
-        self.grid_coordinate = Variable(torch.cat([grid_w, grid_h], 1))
+        self.grid_coordinate = None
     
     def forward(self, input, flows):
-        assert flows.size()[1:] == self.flow_size[1:]
+        if self.grid_coordinate is None or self.grid_coordinate.size(0) != flows.size(0):
+            B, C, T, H, W = flows.size()
+            assert C == 2
+            h_coordinate = torch.linspace(-1.0, 1.0, H).view(1, 1, 1, H, 1).cuda()
+            w_coordinate = torch.linspace(-1.0, 1.0, W).view(1, 1, 1, 1, W).cuda()
+
+            grid_h = h_coordinate.repeat(B, 1, T, 1, W)
+            grid_w = w_coordinate.repeat(B, 1, T, H, 1)
+            self.grid_coordinate = Variable(torch.cat([grid_w, grid_h], 1))
+
         flows[:, 0, :, :, :] = flows[:, 0, :, :] / float(self.flow_size[3]) * 2
         flows[:, 1, :, :, :] = flows[:, 1, :, :] / float(self.flow_size[4]) * 2
 
