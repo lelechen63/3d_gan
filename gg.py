@@ -1,12 +1,12 @@
 import pickle
 import numpy as np
-a = '/mnt/disk1/dat/lchen63/lrw/data/pickle/new_video_16_test.pkl'
+a = '/mnt/disk1/dat/lchen63/lrw/data/pickle/new_video_16_train.pkl'
 _file = open(a, "rb")
 train_data = pickle.load(_file)
 count = 0
 total = len(train_data)
 for index in range(len(train_data)):
-	for i in  range(0,16):
+	for i in  range(0,16):SS
 		lms_path = train_data[index][1 + i*3]
 		melFrames = np.transpose(np.load(lms_path))
         if np.any(np.isinf(melFrames)):
