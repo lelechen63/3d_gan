@@ -136,7 +136,6 @@ class Generator(nn.Module):
             input).unsqueeze(2).repeat(1, 1, 16, 1, 1)
         audio_feature = self.audio_extractor(audio).view(-1, 256, 16, 8, 8)
 
-        import pdb; pdb.set_trace()
         fused_feature = torch.cat([image_feature, audio_feature], 1)
         flows = self.flow_predictor(fused_feature)
         warped_feature = self.warp3d(image_feature, flows)
