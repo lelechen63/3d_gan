@@ -21,12 +21,24 @@ if __name__ == '__main__':
 
     audio_deri_dict = pickle.load(open(audio_deri_f_path))
     flow_dict = pickle.load(open(flow_f_path))
+    
+    print('audio derivative dict length: {}'.format(len(audio_deri_dict)))
+    print('flow dict length {}'.format(len(flow_dict)))
 
     pool = Pool(40)
-    input_lst = [(video_name, audio_deri_dict[video_name], flow_dict[video_name])  
-                    for video_name in audio_deri_dict.keys()
-                        if not np.any(np.isinf(audio_deri_dict[video_name]))]
+    # input_lst = [(video_name, audio_deri_dict[video_name], flow_dict[video_name])  
+    #                 for video_name in audio_deri_dict.keys()
+    #                     if not np.any(np.isinf(audio_deri_dict[video_name]))]
+    input_lst = []
+    for video_name, audio_deri in audio_deri_dict:
+        if np.any(np.isinf(audio_deri)) or not flow_dict.has_key(video_name):
+            continue
+        
+        flows = flow_dict[video_name]
+        input_lst.append((video_name, audio_deri, flows))
     
+    print('input dict length: {}'.format(len(input_lst)))
+
     vname_corr = pool.map(worker, input_lst)
     pickle.dump(vname_corr, open(output_file, 'wb+'))
 
