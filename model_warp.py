@@ -74,7 +74,7 @@ class Generator(nn.Module):
         )
 
         self.flow_predictor = nn.Sequential(
-            conv3d(512, 64, 3, 1, 1),
+            conv3d(768, 64, 3, 1, 1),
             conv3d(64, 16, 3, 1, 1),
             conv3d(16, 4, 3, 1, 1),
             conv3d(4, 2, 3, 1, 1)
