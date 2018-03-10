@@ -126,8 +126,8 @@ class Warp3D(nn.Module):
             grid_w = w_coordinate.repeat(B, 1, T, H, 1)
             self.grid_coordinate = Variable(torch.cat([grid_w, grid_h], 1))
 
-        flows[:, 0, :, :, :] = flows[:, 0, :, :] / float(self.flow_size[3]) * 2
-        flows[:, 1, :, :, :] = flows[:, 1, :, :] / float(self.flow_size[4]) * 2
+        flows[:, 0, :, :, :] = flows[:, 0, :, :] / float(flows.size(3)) * 2
+        flows[:, 1, :, :, :] = flows[:, 1, :, :] / float(flows.size(4)) * 2
 
         grids = self.grid_coordinate + flows
         grids = grids.permute(0, 2, 3, 4, 1)  # NCTHW ==> NTHWC
