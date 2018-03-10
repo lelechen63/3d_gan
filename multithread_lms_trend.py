@@ -18,7 +18,7 @@ def worker(line):
 		else:
 			cur = np.average(np.load(frame))
 			if np.any(np.isinf(cur)):
-    			import pdb; pdb.set_trace()
+    			    import pdb; pdb.set_trace()
 			tt.append(cur - previous)
 			previous = cur
 	print(videoname)
@@ -29,8 +29,8 @@ def lms_trend():
 		lines = f.readlines()
 		result = dict
 		for line in lines:
-    		videoname, tt = worker(line)
-			result[videoname, tt]
+    		    videoname, tt = worker(line)
+		    result[videoname, tt]
 		# pool = Pool(40)
 		# result = dict(pool.map(worker, lines))
 
