@@ -76,24 +76,24 @@ class Trainer():
             config.batch_size), requires_grad=False)
 
 ########multiple GPU####################
-        # if config.cuda:
-        #     device_ids = [int(i) for i in config.device_ids.split(',')]
-        #     self.generator     = nn.DataParallel(self.generator.cuda(), device_ids=device_ids)
-        #     self.discriminator = nn.DataParallel(self.discriminator.cuda(), device_ids=device_ids)
-        #     self.bce_loss_fn   = self.bce_loss_fn.cuda()
-        #     self.mse_loss_fn   = self.mse_loss_fn.cuda()
-        #     self.ones          = self.ones.cuda()
-
-#########single GPU#######################
         if config.cuda:
             device_ids = [int(i) for i in config.device_ids.split(',')]
-            self.generator = self.generator.cuda()
-            self.discriminator = self.discriminator.cuda()
-            # self.encoder = self.encoder.cuda()
-            self.bce_loss_fn = self.bce_loss_fn.cuda()
-            self.mse_loss_fn = self.mse_loss_fn.cuda()
-            self.ones = self.ones.cuda()
-            self.zeros = self.zeros.cuda()
+            self.generator     = nn.DataParallel(self.generator.cuda(), device_ids=device_ids)
+            self.discriminator = nn.DataParallel(self.discriminator.cuda(), device_ids=device_ids)
+            self.bce_loss_fn   = self.bce_loss_fn.cuda()
+            self.mse_loss_fn   = self.mse_loss_fn.cuda()
+            self.ones          = self.ones.cuda()
+
+#########single GPU#######################
+        # if config.cuda:
+        #     device_ids = [int(i) for i in config.device_ids.split(',')]
+        #     self.generator = self.generator.cuda()
+        #     self.discriminator = self.discriminator.cuda()
+        #     # self.encoder = self.encoder.cuda()
+        #     self.bce_loss_fn = self.bce_loss_fn.cuda()
+        #     self.mse_loss_fn = self.mse_loss_fn.cuda()
+        #     self.ones = self.ones.cuda()
+        #     self.zeros = self.zeros.cuda()
 
         self.config = config
         self.start_epoch = 0
