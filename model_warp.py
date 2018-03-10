@@ -58,7 +58,7 @@ class ResnetBlock(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, batch_size, input_nc=3, output_nc=3, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=9, padding_type='zero'):
+    def __init__(self, batch_size, input_nc=3, output_nc=3, ngf=8, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=9, padding_type='zero'):
         assert(n_blocks >= 0)
         super(Generator, self).__init__()
         self.input_nc = input_nc
@@ -74,7 +74,7 @@ class Generator(nn.Module):
         )
 
         self.flow_predictor = nn.Sequential(
-            conv3d(576, 32, 3, 1, 1),
+            conv3d(128, 32, 3, 1, 1),
             conv3d(32, 16, 3, 1, 1),
             conv3d(16, 4, 3, 1, 1),
             conv3d(4, 2, 3, 1, 1)
