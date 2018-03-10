@@ -212,7 +212,7 @@ class Trainer():
 
         self.discriminator.load_state_dict(torch.load(dis_path))
 
-        print("Load pretrained [{}, {}]".format(gen_path, disc_path))
+        print("Load pretrained [{}, {}]".format(gen_path, dis_path))
 
     def _reset_gradients(self):
         self.generator.zero_grad()
