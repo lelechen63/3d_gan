@@ -279,14 +279,13 @@ def parse_args():
 
 
 def main(config):
-    t = trainer.Trainer(config)
+    t = Trainer(config)
     t.fit()
 
 
 if __name__ == "__main__":
     config = parse_args()
     config.is_train = 'train'
-    import base_trainer as trainer
     if not os.path.exists(config.model_dir):
         os.mkdir(config.model_dir)
     if not os.path.exists(config.sample_dir):
