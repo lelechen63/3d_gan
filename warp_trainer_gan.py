@@ -10,7 +10,7 @@ from torch.nn.modules.module import _addindent
 
 from dataset import LRWdataset1D_3d as LRWdataset
 from model_warp import Generator, Discriminator2
-# from tensorboard_logger import configure, log_value
+from tensorboard_logger import configure, log_value
 import functools
 from torch.nn import init
 from torch.optim import lr_scheduler
