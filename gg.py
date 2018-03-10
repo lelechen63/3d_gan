@@ -14,6 +14,6 @@ for index in range(total):
         if np.isinf(melFrames[0][0]):
             f = 1
             
-    if f == 1:
-    	count += 1 
-    print '{}/{}'.format(count,total)
+	if f == 1:
+		count += 1 
+	print '{}/{}'.format(count,total)
