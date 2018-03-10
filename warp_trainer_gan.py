@@ -59,17 +59,7 @@ class Trainer():
         self.opt_d = torch.optim.Adam(self.discriminator.parameters(),
                                       lr=config.lr, betas=(config.beta1, config.beta2))
 
-        if config.dataset == 'lrw':
-            self.dataset = LRWdataset(
-                config.dataset_dir, train=config.is_train)
-
-        self.data_loader = DataLoader(self.dataset,
-                                      batch_size=config.batch_size,
-                                      num_workers=config.num_thread,
-                                      pin_memory=True,
-                                      shuffle=True, drop_last=True)
-        data_iter = iter(self.data_loader)
-        data_iter.next()
+        # data_iter.next()
         self.ones = Variable(torch.ones(
             config.batch_size), requires_grad=False)
         self.zeros = Variable(torch.zeros(
@@ -103,6 +93,17 @@ class Trainer():
         if config.load_model:
             self.start_epoch = config.start_epoch
             self.load(config.pretrained_dir, config.pretrained_epoch)
+        
+        if config.dataset == 'lrw':
+            self.dataset = LRWdataset(
+                config.dataset_dir, train=config.is_train)
+
+        self.data_loader = DataLoader(self.dataset,
+                                      batch_size=config.batch_size,
+                                      num_workers=config.num_thread,
+                                      pin_memory=True,
+                                      shuffle=True, drop_last=True)
+        data_iter = iter(self.data_loader)
 
     def fit(self):
         config = self.config
