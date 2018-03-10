@@ -9,6 +9,7 @@ for index in range(len(train_data)):
 	for i in  range(0,16):
 		lms_path = train_data[index][1 + i*3]
 		melFrames = np.transpose(np.load(lms_path))
+		print melFrames[0][0]
         if np.any(np.isinf(melFrames)):
             count += 1 
             print "{}/{}".format(count,total)
