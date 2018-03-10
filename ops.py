@@ -125,7 +125,7 @@ class Warp3D(nn.Module):
         self.grid_coordinate = Variable(torch.cat([grid_w, grid_h], 1))
     
     def forward(self, input, flows):
-        assert flows.size() == self.flow_size
+        assert flows.size()[1:] == self.flow_size[1:]
         flows[:, 0, :, :, :] = flows[:, 0, :, :] / float(self.flow_size[3]) * 2
         flows[:, 1, :, :, :] = flows[:, 1, :, :] / float(self.flow_size[4]) * 2
 
