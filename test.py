@@ -608,14 +608,14 @@ def compare_cpdb(pickle_path):
     print "Aeverage: \t fake: {:.4f}".format(  average_f)
     return average_f
 def main(config):
-    _sample( config)
+    # _sample( config)
     p = os.path.join( config.sample_dir , 'image/test_result.pkl')
-    average_ssim, average_psnr = compare_ssim(p)
-    # generate_landmarks(p)
-    average_f = compare_cpdb(p)
-    # compare_landmarks(os.path.join(config.sample_dir ,'landmark/'))
-    print "Aeverage: \t fake: {:.4f}".format(  average_f)
-    print "Aeverage: \t ssim: {:.4f},\t psnr: {:.4f}".format( average_ssim, average_psnr)
+    # average_ssim, average_psnr = compare_ssim(p)
+    generate_landmarks(p)
+    # average_f = compare_cpdb(p)
+    compare_landmarks(os.path.join(config.sample_dir ,'landmark/'))
+    # print "Aeverage: \t fake: {:.4f}".format(  average_f)
+    # print "Aeverage: \t ssim: {:.4f},\t psnr: {:.4f}".format( average_ssim, average_psnr)
 if __name__ == "__main__":
     config = parse_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = '1'
