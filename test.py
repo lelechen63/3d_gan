@@ -611,7 +611,7 @@ def main(config):
     # _sample( config)
     p = os.path.join( config.sample_dir , 'image/test_result.pkl')
     # average_ssim, average_psnr = compare_ssim(p)
-    generate_landmarks(p)
+    # generate_landmarks(p)
     # average_f = compare_cpdb(p)
     compare_landmarks(os.path.join(config.sample_dir ,'landmark/'))
     # print "Aeverage: \t fake: {:.4f}".format(  average_f)
