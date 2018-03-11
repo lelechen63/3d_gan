@@ -37,6 +37,7 @@ def worker(video_name):
         previous = cur
 
     print(video_name)
+    assert len(tt) > 0
     return video_name, tt
     			
     	
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     result = pool.map(worker, video_names)
 
     result = dict([(vname, tt)
-                    for (vname, tt) in result if tt is not None and len(tt) == 75])
+                    for (vname, tt) in result if tt is not None and len(tt) > 0])
 
     with open('/mnt/disk0/dat/zhiheng/lip_movements/grid_trend_lms.pkl', 'wb') as handle:
         pickle.dump(result, handle)
