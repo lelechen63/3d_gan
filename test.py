@@ -47,10 +47,10 @@ def parse_args():
                         default="/mnt/disk1/dat/lchen63/lrw/test_result/3d_base/")
     parser.add_argument("--batch_size",
                         type=int,
-                        default=8)
+                        default=1)
     parser.add_argument("--num_thread",
                         type=int,
-                        default=40)
+                        default=1)
     parser.add_argument('--dataset', type=str, default='lrw')
     return parser.parse_args()
 

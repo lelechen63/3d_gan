@@ -136,6 +136,7 @@ class LRWdataset1D_3d(data.Dataset):
                         caption.append(image_path)
                         im = cv2.imread(image_path)
                         if im is None:
+                            print  image_path
                             raise IOError
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
                         im = cv2.resize(im, self.output_shape,interpolation=cv2.INTER_CUBIC)
