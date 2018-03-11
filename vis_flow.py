@@ -15,8 +15,8 @@ def visualize_of(flow):
     return bgr
 
 
-root = '/mnt/disk1/dat/lchen63/lrw/data/regions'
-save_root = '/home/zhiheng/lipmotion/vis_flow_only_lips'
+root = '/mnt/disk1/dat/lchen63/grid/data/regions/bgbb3a'
+save_root = '/home/zhiheng/lipmotion/vis_flow_only_lips/bgbb3a'
 
 # ABOUT_00001_001.jpg
 
@@ -25,8 +25,6 @@ for root, subdirs, files in os.walk(root):
         # if file.endswith('.jpg') and not file.endswith('#lip.jpg'):
         if file.endswith('#lip.jpg'):
             cur_id = int(file[-11: -8])
-            if cur_id > 29:
-                continue
             cur_filepath = os.path.join(root, file)
             next_filepath = os.path.join(root, file[:-11] + '%03d.jpg' % (cur_id+1))
             if not os.path.exists(next_filepath):
