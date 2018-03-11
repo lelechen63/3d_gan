@@ -3,6 +3,7 @@ import numpy as np
 root = '/mnt/disk1/dat/lchen63/lrw/data/'
 import cPickle as pickle
 from multiprocessing import Pool
+import os
 
 
 def worker(line):
@@ -15,6 +16,8 @@ def worker(line):
     tt = []
     for i in range(1, 30):
         frame = lms_folder_name + '/' + temp[-1][:-4] + '_%03d.npy' % i
+        if not os.path.exists(frame):
+            return videoname, None
         if previous == None:
             previous = np.average(np.load(frame))
         else:
