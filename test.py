@@ -318,7 +318,7 @@ def _sample( config):
         ims.append(im)
         embeds.append(right_lms)
         captions.append(caption)
-        landmarks.append(landmark)
+        # landmarks.append(landmark)
     examples = torch.stack(examples,0)
     print 'fuck cool'
     # landmarks = torch.stack(landmarks,0)
@@ -333,7 +333,7 @@ def _sample( config):
     else:
         examples =Variable(examples)
         embeds = Variable(embeds)
-        landmarks = Variable(landmarks)
+        # landmarks = Variable(landmarks)
     # embeds = embeds.view(embeds.size()[0],embeds.size()[1],embeds.size()[2],embeds.size()[3])
     # print embeds.size()
     print '-------'
