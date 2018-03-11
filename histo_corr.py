@@ -45,6 +45,7 @@ if __name__ == '__main__':
 
     vname_corr = pool.map(worker, input_lst)
     vname_corr = [(vname, corr) for (vname, corr) in vname_corr if corr is not None]
+    vname_corr = dict(vname_corr)
     pickle.dump(vname_corr, open(output_file, 'wb+'))
 
     n, bins, patches = plt.hist(vname_corr.values(), 50, normed=1, facecolor='green', alpha=0.75)
