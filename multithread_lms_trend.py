@@ -40,13 +40,14 @@ def worker(video_name):
 if __name__ == '__main__':
     video_names = os.listdir('/mnt/disk1/dat/lchen63/grid/data/regions/')
     
-    
-    # for line in lines:
-# 	    videoname, tt = worker(line)
-    #     result[videoname, tt]
-    pool = Pool(40)
-    result = pool.map(worker, video_names)
-    import pdb; pdb.set_trace()
+    result = []
+    for video_name in video_names:
+	    videoname, tt = worker(video_name)
+        result.append((video_name, tt))
+
+    # pool = Pool(40)
+    # result = pool.map(worker, video_names)
+
     result = dict([(vname, tt)
                     for (vname, tt) in result if tt is not None and len(tt) == 75])
 
