@@ -12,7 +12,7 @@ def worker(vname):
     prev = None
     mean_flows = []
     for i in range(1, 76):
-        fname = vname + '_%03d#lip.jpg'
+        fname = vname + '_%03d#lip.jpg' % i
         frame_path = os.path.join(frames_folder, fname)
         if not os.path.exists(frame_path):
             print('frame path not exists: {}'.format(frame_path))
