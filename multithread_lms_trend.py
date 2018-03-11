@@ -21,8 +21,11 @@ def worker(video_name):
         if not os.path.exists(cur_fname):
             print('path not exists: {}'.format(cur_fname))
             return video_name, None
-        
-        cur = np.load(cur_fname)
+        try:
+            cur = np.load(cur_fname)
+        except:
+            print('load file failed: {}'.format(cur_fname))
+            return video_name, None
         if np.any(np.isinf(cur)):
             print('has inf: {}'.format(video_name))
             return video_name, None
