@@ -260,16 +260,16 @@ def _load(generator, directory):
     print generator
     print path
 
-    # state_dict = torch.load(path)
-    # new_state_dict = OrderedDict()
-    # for k, v in state_dict.items():
-    #     name = k[7:] 
-    #     new_state_dict[name] = v
-    # # load params
-    # generator.load_state_dict(new_state_dict)
+    state_dict = torch.load(path)
+    new_state_dict = OrderedDict()
+    for k, v in state_dict.items():
+        name = k[7:] 
+        new_state_dict[name] = v
+    # load params
+    generator.load_state_dict(new_state_dict)
     # print torch.load(path).keys()
     # gen_path = [path for path in paths if "generator" in path][0]
-    generator.load_state_dict(torch.load(path))
+    # generator.load_state_dict(torch.load(path))
     generator = generator.cuda()
     
     # print('Number of model parameters: {}'.format(
@@ -306,7 +306,8 @@ def _sample( config):
     paths = []
     # print type(dataset)
     # dataset = dataset[0:10]
-    stage1_generator = Generator()
+    # stage1_generator = Generator()
+    stage1_generator = Generator(config.batch_size)
     _load(stage1_generator,config.model_dir)
     examples, ims, embeds, captions = [], [], [],[]
     for idx in range(num_test):
