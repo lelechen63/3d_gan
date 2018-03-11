@@ -15,7 +15,7 @@ def lms_trend():
 	# for i in range(int(len(txt_t)/10)):
 	# 	new.write(txt_t[i])
 
-	for line in open(root + 'prefix2.txt','r'):
+	for line in open(root + 'prefix.txt','r'):
 		line = line[:-1].replace('lipread_vgg', 'lrw')
 		temp = line.split('/')
 		videoname = line
