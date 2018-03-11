@@ -9,6 +9,7 @@ regions_root = '/mnt/disk1/dat/lchen63/grid/data/lms/'
 
 
 def worker(video_name):
+    import pdb; pdb.set_trace()
     folder_path = regions_root + video_name
     if not os.path.exists(folder_path):
         print('folder not exists: {}'.format(folder_path))
