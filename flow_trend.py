@@ -28,8 +28,9 @@ def worker(line):
     return video_name, mean_flows
 
 
-with open('/mnt/disk1/dat/lchen63/lrw/data/prefix2.txt') as f:
-    lines = f.readlines()
+if __name__ == '__main__':
+    vname_lms = pickle.load(open('/mnt/disk0/dat/zhiheng/lip_movements/trend_lms.pkl'))
+    
     pool = Pool(40)
-    result = pool.map(worker, lines)
+    result = pool.map(worker, vname_lms.keys())
     pickle.dump(result, open('of_result.pkl', 'w+'), True)
