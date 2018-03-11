@@ -9,7 +9,6 @@ regions_root = '/mnt/disk1/dat/lchen63/grid/data/lms/'
 
 
 def worker(video_name):
-    import pdb; pdb.set_trace()
     folder_path = regions_root + video_name
     if not os.path.exists(folder_path):
         print('folder not exists: {}'.format(folder_path))
@@ -34,25 +33,18 @@ def worker(video_name):
         
         previous = cur
 
-	print(video_name)
-	return video_name, tt
+    print(video_name)
+    return video_name, tt
     			
     	
 if __name__ == '__main__':
     video_names = os.listdir('/mnt/disk1/dat/lchen63/grid/data/regions/')
-    
-    result = []
-    for vname in video_names:
-        vname, tt = worker(vname)
-        result.append((vname, tt))
 
-    # pool = Pool(40)
-    # result = pool.map(worker, video_names)
+    pool = Pool(40)
+    result = pool.map(worker, video_names)
 
     result = dict([(vname, tt)
                     for (vname, tt) in result if tt is not None and len(tt) == 75])
 
-    # if count == 10:
-    # 	break
     with open('/mnt/disk0/dat/zhiheng/lip_movements/grid_trend_lms.pkl', 'wb') as handle:
         pickle.dump(result, handle)
