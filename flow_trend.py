@@ -22,7 +22,7 @@ def worker(line):
             flow = cv2.calcOpticalFlowFarneback(prev, cur, None, 0.5, 3, 15, 3, 5, 1.2, 0)
             displacements = np.sqrt(flow[:, :, 0]**2 + flow[:, :, 1]**2)
             value = np.mean(displacements)
-            mean_flows.append(value)                
+            mean_flows.append(value)
         prev = cur
     print(video_name)
     return video_name, mean_flows
