@@ -15,18 +15,19 @@ def worker(line):
     previous = None
     tt = []
     for i in range(1, 30):
-        frame = lms_folder_name + '/' + temp[-1][:-4] + '_%03d.npy' % i
-        if not os.path.exists(frame):
+        cur_fname = lms_folder_name + '/' + temp[-1][:-4] + '_%03d.npy' % i
+        if not os.path.exists(cur_fname):
             return videoname, None
-        if previous == None:
-            previous = np.average(np.load(frame))
-        else:
-            cur = np.average(np.load(frame))
-            if np.any(np.isinf(cur)):
-                has_inf = True
-                return videoname, None
-            tt.append(cur - previous)
-            previous = cur
+        
+        cur = np.load(cur_fname)
+        if np.any(np.isinf(cur)):
+            return videoname, None
+
+        if previous is not None:
+            value = np.mean(cur - previous)
+            tt.append(value)
+        
+        previous = cur
 
 	print(videoname)
 	return videoname, tt
@@ -35,14 +36,13 @@ def worker(line):
 if __name__ == '__main__':
     with open(root + 'prefix.txt', 'r') as f:
         lines = f.readlines()
-        result = dict
         # for line in lines:
     # 	    videoname, tt = worker(line)
         #     result[videoname, tt]
         pool = Pool(40)
         result = pool.map(worker, lines)
         result = dict([(vname, tt)
-                       for (vname, tt) in result if tt is not None])
+                       for (vname, tt) in result if tt is not None and len(tt) > 0])
 
     # if count == 10:
     # 	break
