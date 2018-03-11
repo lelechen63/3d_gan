@@ -44,12 +44,12 @@ save_root = '/home/zhiheng/lipmotion/vis_flow_only_lips/bgbb3a'
 #             cv2.imwrite(os.path.join(save_root, file), bgr)
 
 
+prev = None
 for i in range(1, 76):
     fname = vname + '_%03d#lip.jpg' % i
     fpath = os.path.join(root, fname)
     assert os.path.exists(fpath)
 
-    prev = None
     cur = cv2.imread(fpath)
     cur = cv2.resize(cur, (64, 64))
     cur = cv2.cvtColor(cur, cv2.COLOR_BGR2GRAY)
