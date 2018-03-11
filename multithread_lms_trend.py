@@ -46,6 +46,7 @@ if __name__ == '__main__':
     #     result[videoname, tt]
     pool = Pool(40)
     result = pool.map(worker, video_names)
+    import pdb; pdb.set_trace()
     result = dict([(vname, tt)
                     for (vname, tt) in result if tt is not None and len(tt) == 75])
 
