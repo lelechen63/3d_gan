@@ -157,23 +157,23 @@ class LRWdataset1D_3d(data.Dataset):
                         right_lmss[0,i,:] =  right_lms
 
 
-                        image_path = self.train_data[wrong_index][i*3]
-                        lms_path = self.train_data[wrong_index][1 + i*3]
+                        # image_path = self.train_data[wrong_index][i*3]
+                        # lms_path = self.train_data[wrong_index][1 + i*3]
                         # landmark_path = self.train_data[wrong_index][2 + i*3]
-                        im = cv2.imread(image_path)
-                        if im is None:
-                            raise IOError
-                        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-                        im = cv2.resize(im, self.output_shape,interpolation=cv2.INTER_CUBIC)
-                        # im = Image.open(image_path.replace('.jpg', '#lip.jpg')).convert("RGB").resize(self.output_shape)
-                        im = self.transform(im)
+                        # im = cv2.imread(image_path)
+                        # if im is None:
+                        #     raise IOError
+                        # im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                        # im = cv2.resize(im, self.output_shape,interpolation=cv2.INTER_CUBIC)
+                        # # im = Image.open(image_path.replace('.jpg', '#lip.jpg')).convert("RGB").resize(self.output_shape)
+                        # im = self.transform(im)
                         # wrong_landmark = torch.FloatTensor(np.load(landmark_path))
 
-                        zeroVecD = np.zeros((1, 64), dtype='f16')
-                        melFrames = np.transpose(np.load(lms_path))
-                        melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
+                        # zeroVecD = np.zeros((1, 64), dtype='f16')
+                        # melFrames = np.transpose(np.load(lms_path))
+                        # melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
 
-                        features = np.concatenate((melDelta, melFrames), axis=1)
+                        # features = np.concatenate((melDelta, melFrames), axis=1)
 
 
                     example_image = right_imgs[0]
