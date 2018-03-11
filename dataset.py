@@ -126,12 +126,14 @@ class LRWdataset1D_3d(data.Dataset):
 
                     wrong_imgs = torch.FloatTensor(16,3,64,64)
                     wrong_lmss = torch.FloatTensor(1,16,128)
+                    caption = []
                     # wrong_landmark = torch.FloatTensor(8,68,2)
 
                     for i in  range(0,16):
                         image_path = self.test_data[index][i*3]
                         lms_path = self.test_data[index][1 + i*3]
                         landmark_path = self.test_data[index][2 + i*3]
+                        caption.append(image_path)
                         im = cv2.imread(image_path)
                         if im is None:
                             raise IOError
@@ -164,9 +166,7 @@ class LRWdataset1D_3d(data.Dataset):
                         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
                         im = cv2.resize(im, self.output_shape,interpolation=cv2.INTER_CUBIC)
                         # im = Image.open(image_path.replace('.jpg', '#lip.jpg')).convert("RGB").resize(self.output_shape)
-
                         im = self.transform(im)
-                        wrong_img = im
                         # wrong_landmark = torch.FloatTensor(np.load(landmark_path))
 
                         zeroVecD = np.zeros((1, 64), dtype='f16')
@@ -174,22 +174,17 @@ class LRWdataset1D_3d(data.Dataset):
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
 
                         features = np.concatenate((melDelta, melFrames), axis=1)
-                        wrong_lms = torch.FloatTensor(features)
 
-                        wrong_imgs[i,:,:,:] = wrong_img
-                        # wrong_landmarks[i,:,:,:] =  wrong_landmark
-                        wrong_lmss[0,i,:] =  wrong_lms
 
                     example_image = right_imgs[0]
                     # example_landmark = right_landmarks[0]
-                    example_lms = right_lmss[0]
+                    # example_lms = right_lmss[0]
                     
                     # return  example_landmark, example_lms,right_landmarks, right_lmss
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss
                     right_imgs = right_imgs.permute(1,0,2,3)
-                    wrong_imgs = wrong_imgs.permute(1,0,2,3)
                     # example_image = example_image.permute(1,0,2)
-                    return example_image, example_lms, right_imgs, right_lmss, wrong_imgs, wrong_lmss
+                    return example_image, right_imgs, right_lmss, caption
                    
 
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss, wrong_imgs, wrong_landmarks,wrong_lmss

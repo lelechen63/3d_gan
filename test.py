@@ -41,7 +41,7 @@ def parse_args():
                         default="/mnt/disk1/dat/lchen63/grid/data/pickle/")
     parser.add_argument("--model_dir",
                         type=str,
-                        default="/mnt/disk1/dat/lchen63/lrw/model/3d_base/generator_1.pth")
+                        default="/mnt/disk1/dat/lchen63/lrw/model/3d_base/generator_15.pth")
     parser.add_argument("--sample_dir",
                         type=str,
                         default="/mnt/disk1/dat/lchen63/lrw/test_result/3d_base/")
@@ -51,7 +51,7 @@ def parse_args():
     parser.add_argument("--num_thread",
                         type=int,
                         default=40)
-    parser.add_argument('--dataset', type=str, default='grid')
+    parser.add_argument('--dataset', type=str, default='lrw')
     return parser.parse_args()
 
 
@@ -260,16 +260,17 @@ def _load(generator, directory):
     print generator
     print path
 
-    state_dict = torch.load(path)
-    new_state_dict = OrderedDict()
-    for k, v in state_dict.items():
-        name = k[7:] 
-        new_state_dict[name] = v
-    # load params
-    generator.load_state_dict(new_state_dict)
-    print torch.load(path).keys()
+    # state_dict = torch.load(path)
+    # new_state_dict = OrderedDict()
+    # for k, v in state_dict.items():
+    #     name = k[7:] 
+    #     new_state_dict[name] = v
+    # # load params
+    # generator.load_state_dict(new_state_dict)
+    # print torch.load(path).keys()
     # gen_path = [path for path in paths if "generator" in path][0]
-    # generator.load_state_dict(torch.load(path))
+    generator.load_state_dict(torch.load(path))
+    generator = generator.cuda()
     
     # print('Number of model parameters: {}'.format(
     #     sum([p.data.nelement() for p in generator.parameters()])))
@@ -279,11 +280,11 @@ def _load(generator, directory):
 
 def _sample( config):
     if config.dataset == 'grid':
-        dataset = VaganDataset(config.dataset_dir, output_shape=[64, 64], train=False)
+        dataset = VaganDataset(config.dataset_dir, output_shape=[64, 64], train='test')
     elif config.dataset == 'lrw':
-        dataset = LRWdataset(config.dataset_dir, output_shape=[64, 64], train=False)
+        dataset = LRWdataset(config.dataset_dir, output_shape=[64, 64], train='test')
     elif config.dataset == 'ldc':
-        dataset = LDCDataset(config.dataset_dir, output_shape=[64, 64], train=False)
+        dataset = LDCDataset(config.dataset_dir, output_shape=[64, 64], train='test')
     # dataset = VaganDataset(config.dataset_dir, output_shape=[64, 64], train=False)
     num_test = len(dataset)
     num_test=100
@@ -302,21 +303,20 @@ def _sample( config):
         os.mkdir(os.path.join(config.sample_dir,'image/fake64'))
 
 
-
     paths = []
     # print type(dataset)
     # dataset = dataset[0:10]
     stage1_generator = Generator()
     _load(stage1_generator,config.model_dir)
-    examples, ims, landmarks, embeds, captions = [], [], [],[],[]
+    examples, ims, embeds, captions = [], [], [],[]
     for idx in range(num_test):
         # if idx == 10:
         #     break
-        example,im, landmark, embed, caption = dataset[idx]
+        example, im, right_lms, caption = dataset[idx]
         print '{}/{}'.format(idx, num_test)
         examples.append(example)
         ims.append(im)
-        embeds.append(embed)
+        embeds.append(right_lms)
         captions.append(caption)
         landmarks.append(landmark)
     examples = torch.stack(examples,0)
@@ -615,5 +615,7 @@ def main(config):
     print "Aeverage: \t ssim: {:.4f},\t psnr: {:.4f}".format( average_ssim, average_psnr)
 if __name__ == "__main__":
     config = parse_args()
+    os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+
     from model_base import Generator  
     main(config)
