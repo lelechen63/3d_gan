@@ -116,7 +116,7 @@ class LRWdataset1D_3d(data.Dataset):
 
         elif self.train =='test':
             while True:
-                # try:
+                try:
                     wrong_index = random.choice(
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
@@ -185,12 +185,14 @@ class LRWdataset1D_3d(data.Dataset):
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss
                     right_imgs = right_imgs.permute(1,0,2,3)
                     # example_image = example_image.permute(1,0,2)
+                    print '+++'
                     return example_image, right_imgs, right_lmss, caption
                    
 
                     # return example_image, example_landmark, example_lms, right_imgs,right_landmarks, right_lmss, wrong_imgs, wrong_landmarks,wrong_lmss
-                # except:
-                    # index = (index + 1) % len(self.test_data)
+                except:
+                    print 'fuck'
+                    index = (index + 1) % len(self.test_data)
         elif  self.train =='demo':
             while True:
                 # try:
