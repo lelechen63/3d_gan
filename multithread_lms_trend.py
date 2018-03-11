@@ -9,6 +9,8 @@ def worker(line):
 	temp = line.split('/')
 	videoname = line
 	lms_folder_name = line.replace('video', 'lms')[:-4]
+
+	has_inf = False
 	previous = None
 	tt = []
 	for i in range(1, 30):
@@ -18,25 +20,32 @@ def worker(line):
 		else:
 			cur = np.average(np.load(frame))
 			if np.any(np.isinf(cur)):
-    			    import pdb; pdb.set_trace()
+				has_inf = True
+				break
 			tt.append(cur - previous)
 			previous = cur
 	print(videoname)
-	return videoname, tt
+
+	if has_inf:
+		return videoname, None
+	else:
+    	return videoname, tt
+
 
 def lms_trend():
-    with open(root + 'prefix2.txt', 'r') as f:
+    with open(root + 'prefix.txt', 'r') as f:
 		lines = f.readlines()
 		result = dict
-		for line in lines:
-    		    videoname, tt = worker(line)
-		    result[videoname, tt]
-		# pool = Pool(40)
-		# result = dict(pool.map(worker, lines))
+		# for line in lines:
+    	# 	    videoname, tt = worker(line)
+		#     result[videoname, tt]
+		pool = Pool(40)
+		result = pool.map(worker, lines)
+		result = dict([(vname, tt) for (vname, tt) in result if tt is not None])
 
         # if count == 10:
         # 	break
-    with open('/mnt/disk1/dat/lchen63/lrw/data/pickle/trend_lms.pkl', 'wb') as handle:
+    with open('/mnt/disk0/dat/zhiheng/lip_movements/trend_lms.pkl', 'wb') as handle:
         pickle.dump(result, handle)
 
 lms_trend()
