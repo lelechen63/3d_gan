@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 
 def worker(data):
     vname, audio_deri, flow = data
+    if len(audio_deri) != len(flow):
+        return vname, None
     corr, _ = pearsonr(audio_deri, flow)
     print(vname)
     return vname, corr
@@ -42,6 +44,7 @@ if __name__ == '__main__':
     print('input dict length: {}'.format(len(input_lst)))
 
     vname_corr = pool.map(worker, input_lst)
+    vname_corr = [(vname, corr) for (vname, corr) in vname_corr if corr is not None]
     pickle.dump(vname_corr, open(output_file, 'wb+'))
 
     n, bins, patches = plt.hist(vname_corr.values(), 50, normed=1, facecolor='green', alpha=0.75)
