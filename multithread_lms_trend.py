@@ -42,9 +42,9 @@ if __name__ == '__main__':
     video_names = os.listdir('/mnt/disk1/dat/lchen63/grid/data/regions/')
     
     result = []
-    for video_name in video_names:
-	    videoname, tt = worker(video_name)
-        result.append((video_name, tt))
+    for vname in video_names:
+        vname, tt = worker(vname)
+        result.append((vname, tt))
 
     # pool = Pool(40)
     # result = pool.map(worker, video_names)
