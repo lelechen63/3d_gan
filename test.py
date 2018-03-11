@@ -385,6 +385,7 @@ def _sample( config):
                 real_name = os.path.join(real_path,temp[-2]) + '/' + temp[-1][:-4] + '.jpg'
                 fake_name = os.path.join(fake_path,temp[-2]) + '/' + temp[-1][:-4] + '.jpg'
                 scipy.misc.imsave(real_name,real)
+                print fake_name
                 scipy.misc.imsave(fake_name,fake)
                 rp.append(real_name)
                 fp.append(fake_name)
@@ -394,6 +395,7 @@ def _sample( config):
         # print os.path.join(fake_path,temp[-2])
         real_im  = ims[ i * batch_size : i * batch_size + batch_size]
         fake_store = fake_ims_stage1.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*16,3,64,64)
+        print os.path.join(fake_path,temp[-2])
         torchvision.utils.save_image(fake_store, 
             "{}/fake_{}.png".format(os.path.join(fake_path,temp[-2]),i), nrow=16,normalize=True)
         real_store = real_im.permute(0,2,1,3,4).contiguous().view(config.batch_size*16,3,64,64)
