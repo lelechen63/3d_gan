@@ -38,7 +38,7 @@ def parse_args():
                         default=True)
     parser.add_argument("--dataset_dir",
                         type=str,
-                        default="/mnt/disk1/dat/lchen63/grid/data/pickle/")
+                        default="/mnt/disk1/dat/lchen63/lrw/data/pickle/")
     parser.add_argument("--model_dir",
                         type=str,
                         default="/mnt/disk1/dat/lchen63/lrw/model/3d_base/generator_15.pth")
