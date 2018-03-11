@@ -41,10 +41,10 @@ def parse_args():
                         default="/mnt/disk1/dat/lchen63/lrw/data/pickle/")
     parser.add_argument("--model_dir",
                         type=str,
-                        default="/mnt/disk1/dat/lchen63/lrw/model/3d_base/generator_13.pth")
+                        default="/mnt/disk1/dat/lchen63/lrw/model/model_warp/generator_21.pth")
     parser.add_argument("--sample_dir",
                         type=str,
-                        default="/mnt/disk1/dat/lchen63/lrw/test_result/3d_base/")
+                        default="/mnt/disk1/dat/lchen63/lrw/test_result/3d_warp/")
     parser.add_argument("--batch_size",
                         type=int,
                         default=1)
@@ -260,16 +260,16 @@ def _load(generator, directory):
     print generator
     print path
 
-    # state_dict = torch.load(path)
-    # new_state_dict = OrderedDict()
-    # for k, v in state_dict.items():
-    #     name = k[7:] 
-    #     new_state_dict[name] = v
-    # # load params
-    # generator.load_state_dict(new_state_dict)
+    state_dict = torch.load(path)
+    new_state_dict = OrderedDict()
+    for k, v in state_dict.items():
+        name = k[7:] 
+        new_state_dict[name] = v
+    # load params
+    generator.load_state_dict(new_state_dict)
     # print torch.load(path).keys()
     # gen_path = [path for path in paths if "generator" in path][0]
-    generator.load_state_dict(torch.load(path))
+    # generator.load_state_dict(torch.load(path))
     generator = generator.cuda()
     
     # print('Number of model parameters: {}'.format(
@@ -306,7 +306,8 @@ def _sample( config):
     paths = []
     # print type(dataset)
     # dataset = dataset[0:10]
-    stage1_generator = Generator()
+    # stage1_generator = Generator()
+    stage1_generator = Generator(config.batch_size)
     _load(stage1_generator,config.model_dir)
     examples, ims, embeds, captions = [], [], [],[]
     for idx in range(num_test):
@@ -607,17 +608,17 @@ def compare_cpdb(pickle_path):
     print "Aeverage: \t fake: {:.4f}".format(  average_f)
     return average_f
 def main(config):
-    _sample( config)
+    # _sample( config)
     p = os.path.join( config.sample_dir , 'image/test_result.pkl')
-    average_ssim, average_psnr = compare_ssim(p)
-    # generate_landmarks(p)
-    average_f = compare_cpdb(p)
-    # compare_landmarks(os.path.join(config.sample_dir ,'landmark/'))
-    print "Aeverage: \t fake: {:.4f}".format(  average_f)
-    print "Aeverage: \t ssim: {:.4f},\t psnr: {:.4f}".format( average_ssim, average_psnr)
+    # average_ssim, average_psnr = compare_ssim(p)
+    generate_landmarks(p)
+    # average_f = compare_cpdb(p)
+    compare_landmarks(os.path.join(config.sample_dir ,'landmark/'))
+    # print "Aeverage: \t fake: {:.4f}".format(  average_f)
+    # print "Aeverage: \t ssim: {:.4f},\t psnr: {:.4f}".format( average_ssim, average_psnr)
 if __name__ == "__main__":
     config = parse_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 
-    from model_base import Generator  
+    from model_warp import Generator  
     main(config)
