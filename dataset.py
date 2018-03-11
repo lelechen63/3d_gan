@@ -48,14 +48,14 @@ class LRWdataset1D_3d(data.Dataset):
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
                     right_imgs = torch.FloatTensor(16,3,64,64)
-                    right_lmss = torch.FloatTensor(1,16,128)
+                    right_lmss = torch.FloatTensor(1,16,256)
 
                     wrong_imgs = torch.FloatTensor(16,3,64,64)
-                    wrong_lmss = torch.FloatTensor(1, 16,128)
+                    wrong_lmss = torch.FloatTensor(1, 16,256)
 
                     for i in  range(0,16):
                         image_path = self.train_data[index][i*3]
-                        lms_path = self.train_data[index][1 + i*3]
+                        lms_path = self.train_data[index][1 + i*3].replace('.npy','_eps.npy')
                         im = cv2.imread(image_path)
                         if im is None:
                             raise IOError
@@ -65,10 +65,10 @@ class LRWdataset1D_3d(data.Dataset):
                         im = self.transform(im)
                         right_imgs[i,:,:,:] = im
                         
-                        zeroVecD = np.zeros((1, 64), dtype='f16')
+                        zeroVecD = np.zeros((1, 128), dtype='f16')
                         melFrames = np.transpose(np.load(lms_path))
-                        if np.isinf(melFrames[0][0] ):
-                            raise IOError
+                        # if np.isinf(melFrames[0][0] ):
+                        #     raise IOError
 
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
                         features = np.concatenate((melDelta, melFrames), axis=1)
@@ -77,7 +77,7 @@ class LRWdataset1D_3d(data.Dataset):
 
 
                         image_path = self.train_data[wrong_index][i*3]
-                        lms_path = self.train_data[wrong_index][1 + i*3]
+                        lms_path = self.train_data[wrong_index][1 + i*3].replace('.npy','_eps.npy')
                         im = cv2.imread(image_path)
                         if im is None:
                             raise IOError
@@ -85,7 +85,7 @@ class LRWdataset1D_3d(data.Dataset):
                         im = cv2.resize(im, self.output_shape)
                         im = self.transform(im)
 
-                        zeroVecD = np.zeros((1, 64), dtype='f16')
+                        zeroVecD = np.zeros((1, 128), dtype='f16')
                         melFrames = np.transpose(np.load(lms_path))
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
 
@@ -121,17 +121,17 @@ class LRWdataset1D_3d(data.Dataset):
                         [x for x in range(self.__len__()) if x != index])
                     #load righ img
                     right_imgs = torch.FloatTensor(16,3,64,64)
-                    right_lmss = torch.FloatTensor(1,16,128)
+                    right_lmss = torch.FloatTensor(1,16,256)
                     # right_landmarks = torch.FloatTensor(8,68,2)
 
                     wrong_imgs = torch.FloatTensor(16,3,64,64)
-                    wrong_lmss = torch.FloatTensor(1,16,128)
+                    wrong_lmss = torch.FloatTensor(1,16,256)
                     caption = []
                     # wrong_landmark = torch.FloatTensor(8,68,2)
 
                     for i in  range(0,16):
                         image_path = self.test_data[index][i*3]
-                        lms_path = self.test_data[index][1 + i*3]
+                        lms_path = self.test_data[index][1 + i*3].replace('.npy','_eps.npy')
                         landmark_path = self.test_data[index][2 + i*3]
                         caption.append(image_path)
                         im = cv2.imread(image_path)
@@ -145,10 +145,10 @@ class LRWdataset1D_3d(data.Dataset):
                         im = self.transform(im)
                         right_img = im
                         # right_landmark = torch.FloatTensor(np.load(landmark_path))
-                        zeroVecD = np.zeros((1, 64), dtype='f16')
+                        zeroVecD = np.zeros((1, 128), dtype='f16')
                         melFrames = np.transpose(np.load(lms_path))
-                        if np.isinf(melFrames[0][0] ):
-                            raise IOError
+                        # if np.isinf(melFrames[0][0] ):
+                        #     raise IOError
                         melDelta = np.insert(np.diff(melFrames, n=1, axis=0), 0, zeroVecD, axis=0)
 
                         features = np.concatenate((melDelta, melFrames), axis=1)
