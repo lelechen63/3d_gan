@@ -41,10 +41,10 @@ def parse_args():
                         default="/mnt/disk1/dat/lchen63/lrw/data/pickle/")
     parser.add_argument("--model_dir",
                         type=str,
-                        default="/mnt/disk1/dat/lchen63/lrw/model/3d_base/generator_13.pth")
+                        default="/mnt/disk1/dat/lchen63/lrw/model/model_warp/generator_21.pth")
     parser.add_argument("--sample_dir",
                         type=str,
-                        default="/mnt/disk1/dat/lchen63/lrw/test_result/3d_base/")
+                        default="/mnt/disk1/dat/lchen63/lrw/test_result/3d_warp/")
     parser.add_argument("--batch_size",
                         type=int,
                         default=1)
@@ -619,5 +619,5 @@ if __name__ == "__main__":
     config = parse_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 
-    from model_base import Generator  
+    from model_warp import Generator  
     main(config)
