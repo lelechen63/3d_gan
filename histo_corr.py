@@ -16,7 +16,7 @@ def worker(data):
 
 
 if __name__ == '__main__':
-    audio_deri_f_path = '/mnt/disk1/dat/lchen63/lrw/data/pickle/trend_lms.pkl'
+    audio_deri_f_path = '/mnt/disk0/dat/zhiheng/lip_movements/grid_trend_lms.pkl'
     flow_f_path = '/home/zhiheng/lipmotion/3d_gan/of_result.pkl'
     output_file = '/home/zhiheng/lipmotion/3d_gan/corr_result.pkl'
     figure_output_file = '/home/zhiheng/lipmotion/3d_gan/corr_histo.png'
