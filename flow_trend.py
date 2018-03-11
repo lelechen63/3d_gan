@@ -4,12 +4,11 @@ from multiprocessing import Pool
 import cPickle as pickle
 import numpy as np
 
+root = '/mnt/disk1/dat/lchen63/grid/data/regions/'
 
-def worker(line):
-    video_name = line  # used as key in dict
-    line = line.replace('video', 'regions')
-    line = line.replace('lipread_vgg', 'lrw')
-    frames_folder = line.split('.')[0]
+
+def worker(vname):
+    frames_folder = root + vname
     frame_paths = sorted([f for f in os.listdir(frames_folder) if f.endswith('#lip.jpg')])
 
     prev = None
@@ -24,12 +23,12 @@ def worker(line):
             value = np.mean(displacements)
             mean_flows.append(value)
         prev = cur
-    print(video_name)
-    return video_name, mean_flows
+    print(vname)
+    return vname, mean_flows
 
 
 if __name__ == '__main__':
-    vname_lms = pickle.load(open('/mnt/disk0/dat/zhiheng/lip_movements/trend_lms.pkl'))
+    vname_lms = pickle.load(open('/mnt/disk0/dat/zhiheng/lip_movements/grid_trend_lms.pkl'))
     
     pool = Pool(40)
     result = pool.map(worker, vname_lms.keys())
