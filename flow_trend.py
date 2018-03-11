@@ -9,12 +9,15 @@ root = '/mnt/disk1/dat/lchen63/grid/data/regions/'
 
 def worker(vname):
     frames_folder = root + vname
-    frame_paths = sorted([f for f in os.listdir(frames_folder) if f.endswith('#lip.jpg')])
-
     prev = None
     mean_flows = []
-    for frame_path in frame_paths:
-        cur = cv2.imread(os.path.join(frames_folder, frame_path))
+    for i in range(1, 76):
+        fname = vname + '_%03d#lip.jpg'
+        frame_path = os.path.join(frames_folder, fname)
+        if not os.path.exists(frame_path):
+            print('frame path not exists: {}'.format(frame_path))
+            return vname, None
+        cur = cv2.imread(frame_path)
         cur = cv2.cvtColor(cur, cv2.COLOR_BGR2GRAY)
         cur = cv2.resize(cur, (64, 64))
         if not prev is None:
@@ -32,4 +35,5 @@ if __name__ == '__main__':
     
     pool = Pool(40)
     result = pool.map(worker, vname_lms.keys())
+    result = dict([(k,v) for k,v in result if v is not None and len(v) == 74])
     pickle.dump(result, open('of_result.pkl', 'w+'), True)
