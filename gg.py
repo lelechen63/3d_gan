@@ -11,8 +11,10 @@ for index in range(total):
 		lms_path = train_data[index][1 + i*3]
 		melFrames = np.transpose(np.load(lms_path))
 		# print melFrames[0][0]
-        if np.isinf(melFrames[0][0]):
-            f = 1
+		if np.any(np.isinf(melFrames)):
+			f = 1
+        # if np.isinf(melFrames[0][0]):
+            # f = 1
             
 	if f == 1:
 		count += 1 
