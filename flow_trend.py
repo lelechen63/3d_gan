@@ -4,18 +4,20 @@ from multiprocessing import Pool
 import cPickle as pickle
 import numpy as np
 
+root = '/mnt/disk1/dat/lchen63/grid/data/regions/'
 
-def worker(line):
-    video_name = line  # used as key in dict
-    line = line.replace('video', 'regions')
-    line = line.replace('lipread_vgg', 'lrw')
-    frames_folder = line.split('.')[0]
-    frame_paths = sorted([f for f in os.listdir(frames_folder) if f.endswith('#lip.jpg')])
 
+def worker(vname):
+    frames_folder = root + vname
     prev = None
     mean_flows = []
-    for frame_path in frame_paths:
-        cur = cv2.imread(os.path.join(frames_folder, frame_path))
+    for i in range(1, 76):
+        fname = vname + '_%03d#lip.jpg' % i
+        frame_path = os.path.join(frames_folder, fname)
+        if not os.path.exists(frame_path):
+            print('frame path not exists: {}'.format(frame_path))
+            return vname, None
+        cur = cv2.imread(frame_path)
         cur = cv2.cvtColor(cur, cv2.COLOR_BGR2GRAY)
         cur = cv2.resize(cur, (64, 64))
         if not prev is None:
@@ -24,13 +26,14 @@ def worker(line):
             value = np.mean(displacements)
             mean_flows.append(value)
         prev = cur
-    print(video_name)
-    return video_name, mean_flows
+    print(vname)
+    return vname, mean_flows
 
 
 if __name__ == '__main__':
-    vname_lms = pickle.load(open('/mnt/disk0/dat/zhiheng/lip_movements/trend_lms.pkl'))
+    vname_lms = pickle.load(open('/mnt/disk0/dat/zhiheng/lip_movements/grid_trend_lms.pkl'))
     
     pool = Pool(40)
     result = pool.map(worker, vname_lms.keys())
+    result = dict([(k,v) for k,v in result if v is not None and len(v) == 74])
     pickle.dump(result, open('of_result.pkl', 'w+'), True)
