@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import glob
 import torch
 # import gauss
-
+import time
 import torchvision
 from torch.autograd import Variable
 from dataset import LRWdataset1D_3d as LRWdataset
@@ -341,6 +341,7 @@ def _sample( config):
     # # embeds = embeds.view(len(indices), -1)
     # print embeds.size()
     batch_size = config.batch_size
+    t1 =  time.time()
     for i in range(num_test/batch_size):
         example = examples[i*batch_size:  i*batch_size + batch_size]
         # landmark = landmarks[i*batch_size:  i*batch_size + batch_size]
@@ -393,10 +394,10 @@ def _sample( config):
             fff["real_path"] = rp
             fff["fake_path"] = fp
             paths.append(fff)
+        print  time.time() - t1 
         # print os.path.join(fake_path,temp[-2])
         real_im  = ims[ i * batch_size : i * batch_size + batch_size]
         fake_store = fake_ims_stage1.data.permute(0,2,1,3,4).contiguous().view(config.batch_size*16,3,64,64)
-        print os.path.join(fake_path,temp[-2])
         torchvision.utils.save_image(fake_store, 
             "{}/fake_{}.png".format(os.path.join(fake_path,temp[-2]),i), nrow=16,normalize=True)
         real_store = real_im.permute(0,2,1,3,4).contiguous().view(config.batch_size*16,3,64,64)
@@ -608,12 +609,12 @@ def compare_cpdb(pickle_path):
     print "Aeverage: \t fake: {:.4f}".format(  average_f)
     return average_f
 def main(config):
-    # _sample( config)
-    p = os.path.join( config.sample_dir , 'image/test_result.pkl')
+    _sample( config)
+    # p = os.path.join( config.sample_dir , 'image/test_result.pkl')
     # average_ssim, average_psnr = compare_ssim(p)
     # generate_landmarks(p)
     # average_f = compare_cpdb(p)
-    compare_landmarks(os.path.join(config.sample_dir ,'landmark/'))
+    # compare_landmarks(os.path.join(config.sample_dir ,'landmark/'))
     # print "Aeverage: \t fake: {:.4f}".format(  average_f)
     # print "Aeverage: \t ssim: {:.4f},\t psnr: {:.4f}".format( average_ssim, average_psnr)
 if __name__ == "__main__":
