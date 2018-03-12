@@ -32,6 +32,6 @@ for vname in selected_vnames:
         # lms = [(l - min(lms)) / (max(lms) - min(lms)) for l in lms]
         # flow = [(f - min(flow)) / (max(flow) - min(flow)) for f in flow]
         result[vname].append((delay, avg_corr))
-    result[vname].sort(key=lambda x: np.abs(x), reverse=True)
+    result[vname].sort(key=lambda x: np.abs(x[1]), reverse=True)
 
 pickle.dump(result, open('corr_offset_tab.pkl', 'wb+'))
