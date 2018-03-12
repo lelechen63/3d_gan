@@ -45,8 +45,8 @@ def in_worker(q_in, q_out):
                           for i in range(0, len(audio_deris), 16)
                             if i + 16 <= len(audio_deris)]
         for aud, of in chunked_aud_of:
-            # aud = [(a - min(aud)) / (max(aud) - min(aud)) for a in aud]
-            # of = [(o - min(of)) / (max(of) - min(aud)) for o in of]
+            aud = [(a - min(aud)) / (max(aud) - min(aud)) for a in aud]
+            of = [(o - min(of)) / (max(of) - min(aud)) for o in of]
             corr, p_value = pearsonr(aud, of)
             print('video name: {}, delay: {}, corr: {}, p_value: {}'
                     .format(video_name, delay, corr, p_value))
