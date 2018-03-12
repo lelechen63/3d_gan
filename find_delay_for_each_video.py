@@ -61,3 +61,9 @@ if __name__ == '__main__':
     vname_corr = pool.map(worker, input_lst)
     vname_corr = [(vname, corr, delay) for (vname, corr, delay) in vname_corr if delay is not None]
     pickle.dump(vname_corr, open(output_file, 'wb+'))
+
+    bucket = [0] * 31
+    for (vname, corr, delay) in vname_corr:
+        bucket[delay+15] += 1
+
+    print(bucket)
