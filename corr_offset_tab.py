@@ -16,8 +16,8 @@ result = {}
 for vname in selected_vnames:
     result[vname] = []
 
-for delay in range(-15, 1):
-    for vname in selected_vnames:
+for vname in selected_vnames:
+    for delay in range(-15, 16):
         lms = vname_lms[vname]
         flow = vname_flow[vname]
         lms, flow = make_delay(lms, flow, delay)
@@ -32,6 +32,6 @@ for delay in range(-15, 1):
         # lms = [(l - min(lms)) / (max(lms) - min(lms)) for l in lms]
         # flow = [(f - min(flow)) / (max(flow) - min(flow)) for f in flow]
         result[vname].append((delay, avg_corr))
-    result[delay].sort(key=lambda x: math.fabs(x), reverse=True)
+    result[vname].sort(key=lambda x: math.fabs(x), reverse=True)
 
 pickle.dump(result, open('corr_offset_tab.pkl', 'wb+'))
