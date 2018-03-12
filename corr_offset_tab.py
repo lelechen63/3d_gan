@@ -12,7 +12,7 @@ result = {}
 for vname in selected_vnames:
     result[vname] = []
 
-for delay in range(-16, 0):
+for delay in range(-15, 1):
     for vname in selected_vnames:
         lms = vname_lms[vname]
         flow = vname_flow[vname]
