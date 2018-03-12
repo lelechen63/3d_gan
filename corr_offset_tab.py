@@ -1,13 +1,16 @@
 from chunk_histo import make_delay
 import cPickle as pickle
 from scipy.stats import pearsonr
+from random import shuffle
 
-lst = [('bbwr6p', 0.3954638720888051), ('bgie8n', 0.34279523293199615), ('bbifza', 0.32421508975559526), ('bbbk9p', 0.30602610295239646), ('bbaq7s', 0.30533454202306354)]
+vnames = ['bbwr6p', 'bgie8n', 'bbifza', 'bbbk9p', 'bbaq7s', 'bgbs5s', 'bbaq1a', 'bbwd2a', 'bgbz3p', 'bgbg7n', 'bgak2n', 'bbwj4p', 'bbbd8s', 'bgay4n', 'bbiu8n', 'bgaf4s', 'bbik4n', 'bbwv9s', 'bbaj3s', 'bbiv3n', 'bbij9a', 'bgaf1a', 'bgbz1n', 'bgam1p', 'bbax2s', 'bbic1a', 'bbwgzp', 'bgig6a', 'bgbm7s', 'bbap8a', 'bbij5s', 'bgbfzp', 'bgar6p', 'bbwp8s', 'bbac9a', 'bbbp9s', 'bgam4n', 'bbad8p', 'bbwy7a', 'bbac7s', 'bgid7n', 'bbad7p', 'bgbz9n', 'bgbe9s', 'bgbn6s', 'bbbk7s', 'bbwf4p', 'bgba7s', 'bgaa7s', 'bgar3n', 'bgaa3p', 'bbaezp', 'bbbz8s', 'bbbe4s', 'bbie6s', 'bbae6n', 'bgah2p', 'bbwm1n', 'bbik1p', 'bgan4s', 'bbbx1n', 'bbac3n', 'bbap3p', 'bgbn4a', 'bbie8a', 'bbwz8s', 'bbbd4p', 'bbiq4s', 'bbbp2p', 'bbii2s', 'bgbs5p', 'bgba4p', 'bbaz5p', 'bgaf4n', 'bbbk1p', 'bgbtza', 'bbwc8p', 'bgbs6s', 'bgak4s', 'bbayzs', 'bbwk1s', 'bbwr2s', 'bbap2s', 'bbayzp', 'bbix3p', 'bgbf9p', 'bgbe9n', 'bgbs6n', 'bgal7n', 'bgbg2s', 'bgbe6p', 'bbwj3s', 'bbby8p', 'bbaz1a', 'bgbh3a', 'bgbf1a', 'bbil2a', 'bgbg1s', 'bbbyzn', 'bbix5p']
+shuffle(vnames)
+selected_vnames = vnames[:4]
+
 
 vname_lms = pickle.load(open('/mnt/disk0/dat/zhiheng/lip_movements/grid_trend_lms.pkl'))
 vname_flow = pickle.load(open('/home/zhiheng/lipmotion/3d_gan/of_result.pkl'))
 
-selected_vnames = [e[0] for e in lst]
 result = {}
 for vname in selected_vnames:
     result[vname] = []
