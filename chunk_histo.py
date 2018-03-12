@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import os
 
 
-figure_output_root = '/home/zhiheng/lipmotion/3d_gan/histo_figure/'
+figure_output_root = '/home/zhiheng/lipmotion/3d_gan/histo_figure_minmax/'
 
 
 def chunks(l, n):
@@ -45,8 +45,8 @@ def in_worker(q_in, q_out):
                           for i in range(0, len(audio_deris), 16)
                             if i + 16 <= len(audio_deris)]
         for aud, of in chunked_aud_of:
-            # aud = [(a - min(aud)) / (max(aud) - min(aud)) for a in aud]
-            # of = [(o - min(of)) / (max(of) - min(aud)) for o in of]
+            aud = [(a - min(aud)) / (max(aud) - min(aud)) for a in aud]
+            of = [(o - min(of)) / (max(of) - min(aud)) for o in of]
             corr, p_value = pearsonr(aud, of)
             print('video name: {}, delay: {}, corr: {}, p_value: {}'
                     .format(video_name, delay, corr, p_value))
@@ -64,6 +64,7 @@ def out_worker(q_out):
                 plt.ylabel('count')
                 plt.title('Delay: {}'.format(delay))
                 plt.grid(True)
+                plt.axis([-1, 1, 0, 5])
                 figure_path = os.path.join(figure_output_root, 'delay_{}'.format(delay))
                 plt.savefig(figure_path)
                 print('figure saved to: {}'.format(figure_path))
@@ -93,7 +94,7 @@ def main():
         write_process = multiprocessing.Process(target=out_worker, args=(q_out,))
         write_process.start()
 
-        for delay in range(-59, 60):
+        for delay in range(-16, 16):
             visual_audio_pairs = [(video_name, ofs, audio[video_name], delay)
                                   for video_name, ofs in visual.iteritems() if audio.has_key(video_name)]
             for i, item in enumerate(visual_audio_pairs):
