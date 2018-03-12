@@ -64,6 +64,7 @@ def out_worker(q_out):
                 plt.ylabel('count')
                 plt.title('Delay: {}'.format(delay))
                 plt.grid(True)
+                plt.axis([-1, 1, 0, 5])
                 figure_path = os.path.join(figure_output_root, 'delay_{}'.format(delay))
                 plt.savefig(figure_path)
                 print('figure saved to: {}'.format(figure_path))
@@ -93,7 +94,7 @@ def main():
         write_process = multiprocessing.Process(target=out_worker, args=(q_out,))
         write_process.start()
 
-        for delay in range(-59, 60):
+        for delay in range(-16, 16):
             visual_audio_pairs = [(video_name, ofs, audio[video_name], delay)
                                   for video_name, ofs in visual.iteritems() if audio.has_key(video_name)]
             for i, item in enumerate(visual_audio_pairs):
