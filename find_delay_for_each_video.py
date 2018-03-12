@@ -15,10 +15,16 @@ def worker(data):
     max_corr_delay = None
     for delay in range(-15, 16):
         au, fl = make_delay(audio_deri, flow, delay)
-        corr, _ = pearsonr(au, fl)
-        corr = np.abs(corr)
-        if corr > max_corr:
-            max_corr = corr
+        chunked_aud_of = [(au[i: i+16], fl[i: i+16])
+                          for i in range(0, len(au), 16)
+                            if i + 16 <= len(au)]
+        sum_corr = 0
+        for a, f in chunked_aud_of:
+            corr, _ = pearsonr(a, f)
+            sum_corr += np.abs(corr)
+        avg_corr = sum_corr / 16.0
+        if avg_corr > max_corr:
+            max_corr = avg_corr
             max_corr_delay = delay
 
     print(vname)
