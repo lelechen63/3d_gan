@@ -28,7 +28,7 @@ def worker(data):
 if __name__ == '__main__':
     audio_deri_f_path = '/mnt/disk0/dat/zhiheng/lip_movements/grid_trend_lms.pkl'
     flow_f_path = '/home/zhiheng/lipmotion/3d_gan/of_result.pkl'
-    output_file = '/home/zhiheng/lipmotion/3d_gan/corr_result.pkl'
+    output_file = '/home/zhiheng/lipmotion/3d_gan/best_delay_result.pkl'
 
     audio_deri_dict = pickle.load(open(audio_deri_f_path))
     flow_dict = dict(pickle.load(open(flow_f_path)))
