@@ -95,7 +95,7 @@ def main():
 
         for delay in range(-59, 60):
             visual_audio_pairs = [(video_name, ofs, audio[video_name], delay)
-                                  for video_name, ofs in visual if audio.has_key(video_name)]
+                                  for video_name, ofs in visual.iteritems() if audio.has_key(video_name)]
             for i, item in enumerate(visual_audio_pairs):
                 q_in[i % len(q_in)].put(item)
 
