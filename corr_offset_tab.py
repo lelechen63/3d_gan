@@ -22,4 +22,4 @@ for delay in range(-16, 0):
         corr, _ = pearsonr(lms, flow)
         result[vname].append((delay, corr))
 
-pickle.dump(open('corr_offset_tab.pkl', 'wb+'))
+pickle.dump(result, open('corr_offset_tab.pkl', 'wb+'))
