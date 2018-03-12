@@ -7,7 +7,7 @@ lst = [('bbwr6p', 0.3954638720888051), ('bgie8n', 0.34279523293199615), ('bbifza
 vname_lms = pickle.load(open('/mnt/disk0/dat/zhiheng/lip_movements/grid_trend_lms.pkl'))
 vname_flow = pickle.load(open('/home/zhiheng/lipmotion/3d_gan/of_result.pkl'))
 
-selected_vnames = [e[1] for e in lst]
+selected_vnames = [e[0] for e in lst]
 result = {}
 for vname in selected_vnames:
     result[vname] = []
