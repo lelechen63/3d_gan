@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import os
 
 
-figure_output_root = '/home/zhiheng/lipmotion/3d_gan/histo_figure/'
+figure_output_root = '/home/zhiheng/lipmotion/3d_gan/histo_figure_minmax/'
 
 
 def chunks(l, n):
