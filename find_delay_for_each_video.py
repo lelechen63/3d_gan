@@ -21,7 +21,7 @@ def worker(data):
         sum_corr = 0
         for a, f in chunked_aud_of:
             corr, _ = pearsonr(a, f)
-            sum_corr += np.abs(corr)
+            sum_corr += corr
         avg_corr = sum_corr / len(chunked_aud_of)
         if avg_corr > max_corr:
             max_corr = avg_corr
