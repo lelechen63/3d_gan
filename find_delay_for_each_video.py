@@ -6,7 +6,7 @@ import numpy as np
 from chunk_histo import make_delay
 
 
-offset = 50
+offset = 8
 
 def worker(data):
     vname, audio_deri, flow = data
