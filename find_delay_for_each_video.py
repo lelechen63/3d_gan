@@ -15,7 +15,7 @@ def worker(data):
 
     max_corr = 0
     max_corr_delay = None
-    for delay in range(-offset, offset+1):
+    for delay in range(0, offset):
         au, fl = make_delay(audio_deri, flow, delay)
         chunked_aud_of = [(au[i: i+16], fl[i: i+16])
                           for i in range(0, len(au), 16)
@@ -64,8 +64,8 @@ if __name__ == '__main__':
     vname_corr = [(vname, corr, delay) for (vname, corr, delay) in vname_corr if delay is not None]
     pickle.dump(vname_corr, open(output_file, 'wb+'))
 
-    bucket = [0] * (2*offset+1)
+    bucket = [0] * (offset)
     for (vname, corr, delay) in vname_corr:
-        bucket[delay+offset] += 1
+        bucket[delay] += 1
 
     print(bucket)
