@@ -22,7 +22,7 @@ for vname in selected_vnames:
     result[vname] = []
 
 for vname in selected_vnames:
-    for delay in range(-8, 9):
+    for delay in range(0, 8):
         lms = vname_lms[vname]
         flow = vname_flow[vname]
         lms, flow = make_delay(lms, flow, delay)
