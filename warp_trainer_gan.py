@@ -250,17 +250,17 @@ def parse_args():
     # default = '/media/lele/DATA/lrw/data2/pickle')
     parser.add_argument("--model_dir",
                         type=str,
-                        default="/mnt/disk1/dat/lchen63/lrw/model/3d_base")
+                        default="/mnt/disk1/dat/lchen63/lrw/model/3d_warp")
     # default='/media/lele/DATA/lrw/data2/model')
     parser.add_argument("--sample_dir",
                         type=str,
-                        default="/mnt/disk1/dat/lchen63/lrw/sample/3d_base/")
+                        default="/mnt/disk1/dat/lchen63/lrw/sample/3d_warp/")
     # default='/media/lele/DATA/lrw/data2/sample/lstm_gan')
     parser.add_argument("--log_dir",
                         type=str,
                         default="/mnt/disk1/dat/lchen63/data/lrw/data/log/")
     # default="/media/lele/DATA/lrw/data2/log/lstm_gan/")
-    parser.add_argument('--device_ids', type=str, default='3')
+    parser.add_argument('--device_ids', type=str, default='2,3')
     parser.add_argument('--dataset', type=str, default='lrw')
     parser.add_argument('--num_thread', type=int, default=32)
     # parser.add_argument('--flownet_pth', type=str, help='path of flownets model')
