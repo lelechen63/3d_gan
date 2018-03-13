@@ -41,5 +41,7 @@ for vname in selected_vnames:
 
 pickle.dump(result, open('corr_offset_tab.pkl', 'wb+'))
 
-selected_result = [(vname, result[vname]) for vname in result if result[vname][0][1] > 0 and result[vname][1][1] > 0]
+selected_result = [(vname, result[vname]) for vname in result if result[vname][0][1] > 0
+                                                             and result[vname][1][1] > 0
+                                                             and result[vname][0][0] < 4]
 print(selected_result[:5])
