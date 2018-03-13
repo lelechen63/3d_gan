@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
-data = [21, 19, 18, 22, 22, 137, 115, 155, 132, 148, 123, 163, 136, 138, 155, 139, 156, 147, 145, 166, 134, 157, 140, 147, 156, 157, 26, 19, 17, 26, 24]
+data = [191, 172, 193, 175, 184, 198, 191, 182, 181, 191, 202, 213, 189, 203, 208, 184, 203]
 
-labels = [str(i) for i in range(-15, 16)]
+labels = [str(i) for i in range(-8, 9)]
 
 plt.bar(range(len(data)), data, tick_label=labels)
 plt.xlabel('delay')
