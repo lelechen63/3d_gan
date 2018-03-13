@@ -22,7 +22,7 @@ for vname in selected_vnames:
     result[vname] = []
 
 for vname in selected_vnames:
-    for delay in range(-15, 16):
+    for delay in range(-8, 9):
         lms = vname_lms[vname]
         flow = vname_flow[vname]
         lms, flow = make_delay(lms, flow, delay)
@@ -41,5 +41,5 @@ for vname in selected_vnames:
 
 pickle.dump(result, open('corr_offset_tab.pkl', 'wb+'))
 
-selected_result = [(vname, result[vname]) for vname in result if result[vname][0] > 0 and result[vname][1] > 0]
+selected_result = [(vname, result[vname]) for vname in result if result[vname][0][1] > 0 and result[vname][1][1] > 0]
 print(selected_result)
