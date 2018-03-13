@@ -67,7 +67,7 @@ class Generator(nn.Module):
         norm_layer = nn.BatchNorm2d
 
         self.audio_extractor = nn.Sequential(
-            conv2d(1, 32, 3, 2, 1),
+            conv2d(1, 32, 3, 1, 1),
             conv2d(32, 64, 3, 1, 1),
             conv2d(64, 128, 3, (1, 2), 1),
             conv2d(128, 256, 3, 1, 1)  # 16,64
@@ -208,10 +208,10 @@ class Discriminator2(nn.Module):
         super(Discriminator2, self).__init__()
 
         self.audio_extractor = nn.Sequential(
-            conv2d(1, 32, 3, 2, 1),
-            conv2d(32, 64, 3, 2, 1),  # 16,64
-            conv2d(64, 128, 3, 1, 1),
-            conv2d(128, 256, 3, 2, 1),  # 16,32
+            conv2d(1, 32, 3, 1, 1, normalizer=None),
+            conv2d(32, 64, 3, 2, 1, normalizer=None),  # 16,64
+            conv2d(64, 128, 3, 1, 1, normalizer=None),
+            conv2d(128, 256, 3, 2, 1, normalizer=None),  # 16,32
         )
         self.audio_fc = nn.Sequential(
             Flatten(),
