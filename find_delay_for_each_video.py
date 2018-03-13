@@ -22,7 +22,7 @@ def worker(data):
         for a, f in chunked_aud_of:
             corr, _ = pearsonr(a, f)
             sum_corr += np.abs(corr)
-        avg_corr = sum_corr / 16.0
+        avg_corr = sum_corr / len(chunked_aud_of)
         if avg_corr > max_corr:
             max_corr = avg_corr
             max_corr_delay = delay
@@ -61,3 +61,9 @@ if __name__ == '__main__':
     vname_corr = pool.map(worker, input_lst)
     vname_corr = [(vname, corr, delay) for (vname, corr, delay) in vname_corr if delay is not None]
     pickle.dump(vname_corr, open(output_file, 'wb+'))
+
+    bucket = [0] * 31
+    for (vname, corr, delay) in vname_corr:
+        bucket[delay+15] += 1
+
+    print(bucket)
