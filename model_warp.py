@@ -21,9 +21,7 @@ class ResnetBlock(nn.Module):
     def build_conv_block(self, dim, padding_type, norm_layer, use_dropout, use_bias):
         conv_block = []
         p = 0
-        if padding_type == 'reflect':
-            conv_block += [nn.ReflectionPad3d(1)]
-        elif padding_type == 'replicate':
+        if padding_type == 'replicate':
             conv_block += [nn.ReplicationPad3d(1)]
         elif padding_type == 'zero':
             p = (0, 1, 1)
@@ -38,10 +36,8 @@ class ResnetBlock(nn.Module):
             conv_block += [nn.Dropout(0.5)]
 
         p = 0
-        if padding_type == 'reflect':
-            conv_block += [nn.ReflectionPad2d(1)]
-        elif padding_type == 'replicate':
-            conv_block += [nn.ReplicationPad2d(1)]
+        if padding_type == 'replicate':
+            conv_block += [nn.ReplicationPad3d(1)]
         elif padding_type == 'zero':
             p = (0, 1, 1)
         else:
@@ -58,7 +54,7 @@ class ResnetBlock(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, batch_size, input_nc=3, output_nc=3, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=9, padding_type='zero'):
+    def __init__(self, input_nc=3, output_nc=3, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=9, padding_type='zero'):
         assert(n_blocks >= 0)
         super(Generator, self).__init__()
         self.input_nc = input_nc
@@ -68,18 +64,28 @@ class Generator(nn.Module):
 
         self.audio_extractor = nn.Sequential(
             conv2d(1, 32, 3, 1, 1),
-            conv2d(32, 64, 3, 1, 1),
-            conv2d(64, 128, 3, (1, 2), 1),
-            conv2d(128, 256, 3, 1, 1)  # 16,64
+            conv2d(32, 64, 3, (1, 2), 1), # 16, 128
+            conv2d(64, 128, 3, 1, 1),
+            conv2d(128, 256, 3, 1, 1),
+            nn.MaxPool2d((1,2), (1,2)) # 16, 64
         )
 
         n_downsampling = 3
 
+        # self.flow_predictor = nn.Sequential(
+        #     conv3d(ngf * 2**n_downsampling + 256, 128, 3, 1, 1, groups=2),
+        #     conv3d(128, 64, 3, 1, 1, groups=2),
+        #     conv3d(64, 16, 3, 1, 1, groups=2),
+        #     conv3d(16, 2, 3, 1, 1, groups=2)
+        # )
         self.flow_predictor = nn.Sequential(
-            conv3d(ngf * 2**n_downsampling + 256, 128, 3, 1, 1, groups=2),
-            conv3d(128, 64, 3, 1, 1, groups=2),
-            conv3d(64, 16, 3, 1, 1, groups=2),
-            conv3d(16, 2, 3, 1, 1, groups=2)
+            conv3d(ngf * 2 ** n_downsampling + 256, 128, 3, 1, 1),
+            ResnetBlock(128, padding_type='replicate', norm_layer=nn.BatchNorm3d, use_dropout=False,
+                        use_bias=True),
+            conv3d(128, 64, 3, 1, 1),
+            ResnetBlock(64, padding_type='replicate', norm_layer=nn.BatchNorm3d, use_dropout=False,
+                        use_bias=True),
+            conv3d(64, 2, 3, 1, 1)
         )
         self.warp3d = Warp3D()
 
