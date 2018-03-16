@@ -64,7 +64,7 @@ class Generator(nn.Module):
         self.audio_extractor = nn.Sequential(
             conv2d(1,32,3,1,1),
             conv2d(32,64,3,(1,2),1), #16,128
-            nn.MaxPool2d((1,2),(1,2)) # 16,64
+            nn.MaxPool2d((1,2),(1,2)), # 16,64
             conv2d(64,128,3,1,1), 
             conv2d(128,256,3,(1,2),1), # 16,32 
             nn.MaxPool2d((1,2),(1,2)) # 16,16
