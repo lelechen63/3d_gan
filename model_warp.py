@@ -29,7 +29,7 @@ class ResnetBlock(nn.Module):
             raise NotImplementedError(
                 'padding [%s] is not implemented' % padding_type)
 
-        conv_block += [nn.Conv3d(dim, dim, kernel_size=(1, 3, 3), padding=p, bias=use_bias),
+        conv_block += [nn.Conv3d(dim, dim, kernel_size=(3, 3, 3), padding=p, bias=use_bias),
                        norm_layer(dim),
                        nn.ReLU(True)]
         if use_dropout:
@@ -54,7 +54,7 @@ class ResnetBlock(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, input_nc=3, output_nc=3, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=9, padding_type='zero'):
+    def __init__(self, input_nc=3, output_nc=3, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=9, padding_type='replicate'):
         assert(n_blocks >= 0)
         super(Generator, self).__init__()
         self.input_nc = input_nc
@@ -67,7 +67,7 @@ class Generator(nn.Module):
             conv2d(32, 64, 3, (1, 2), 1), # 16, 128
             conv2d(64, 128, 3, 1, 1),
             conv2d(128, 256, 3, 1, 1),
-            nn.MaxPool2d((1,2), (1,2)) # 16, 64
+            nn.MaxPool2d((1, 2), (1, 2)) # 16, 64
         )
 
         n_downsampling = 3
