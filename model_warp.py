@@ -54,8 +54,9 @@ class ResnetBlock(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, input_nc=3, output_nc=3, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=9, padding_type='replicate'):
-        assert(n_blocks >= 0)
+    def __init__(self, input_nc=3, output_nc=3, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=9,
+                 padding_type='replicate'):
+        assert (n_blocks >= 0)
         super(Generator, self).__init__()
         self.input_nc = input_nc
         self.output_nc = output_nc
@@ -64,10 +65,10 @@ class Generator(nn.Module):
 
         self.audio_extractor = nn.Sequential(
             conv2d(1, 32, 3, 1, 1),
-            conv2d(32, 64, 3, (1, 2), 1), # 16, 128
+            conv2d(32, 64, 3, (1, 2), 1),  # 16, 128
             conv2d(64, 128, 3, 1, 1),
             conv2d(128, 256, 3, 1, 1),
-            nn.MaxPool2d((1, 2), (1, 2)) # 16, 64
+            nn.MaxPool2d((1, 2), (1, 2))  # 16, 64
         )
 
         n_downsampling = 3
@@ -101,7 +102,7 @@ class Generator(nn.Module):
                  nn.ReLU(True)]
 
         for i in range(n_downsampling):
-            mult = 2**i
+            mult = 2 ** i
             model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3,
                                 stride=2, padding=1, bias=use_bias),
                       norm_layer(ngf * mult * 2),
@@ -119,13 +120,13 @@ class Generator(nn.Module):
 
         model = []
 
-        mult = 2**n_downsampling
+        mult = 2 ** n_downsampling
         for i in range(n_blocks):
             model += [ResnetBlock(ngf * mult, padding_type=padding_type,
                                   norm_layer=norm_layer, use_dropout=use_dropout, use_bias=use_bias)]
 
         for i in range(n_downsampling):
-            mult = 2**(n_downsampling - i)
+            mult = 2 ** (n_downsampling - i)
             model += [nn.ConvTranspose3d(ngf * mult, int(ngf * mult / 2),
                                          kernel_size=(3, 3, 3), stride=(1, 2, 2),
                                          padding=(1), output_padding=(0, 1, 1),
@@ -165,10 +166,11 @@ class Discriminator(nn.Module):
         )
 
         self.audio_extractor = nn.Sequential(
-            conv2d(1, 32, 3, 1, 1, normalizer=None),
-            conv2d(32, 64, 3, 2, 1, normalizer=None),  # 8,64
-            conv2d(64, 128, 3, 1, 1, normalizer=None),
-            conv2d(128, 256, 3, 2, 1, normalizer=None),  # 4,32
+            conv2d(1, 32, 3, 1, 1),
+            conv2d(32, 64, 3, 2, 1),  # 8,64
+            conv2d(64, 128, 3, 1, 1),
+            conv2d(128, 256, 3, 2, 1),  # 4,32
+
         )
         self.audio_fc = nn.Sequential(
             Flatten(),
@@ -182,12 +184,11 @@ class Discriminator(nn.Module):
             conv3d(128, 256, 4, (2, 2, 2), 1),
             conv3d(256, 512, 4, (1, 2, 2), 1)
         )
-        #(512,1,4,4)
+        # (512,1,4,4)
 
         self.net_joint = nn.Sequential(
             conv3d(512 + 256, 512, 3, 1, 1),
-            conv3d(512, 1, (1, 4, 4), 1, 0,
-                   activation=nn.Sigmoid, normalizer=None)
+            conv3d(512, 1, (1, 4, 4), 1, 0, activation=nn.Sigmoid, normalizer=None)
         )
 
     def forward(self, example_im, x, audio):
@@ -214,29 +215,28 @@ class Discriminator2(nn.Module):
         super(Discriminator2, self).__init__()
 
         self.audio_extractor = nn.Sequential(
-            conv2d(1, 32, 3, 1, 1, normalizer=None),
-            conv2d(32, 64, 3, 2, 1, normalizer=None),  # 16,64
-            conv2d(64, 128, 3, 1, 1, normalizer=None),
-            conv2d(128, 256, 3, 2, 1, normalizer=None),  # 16,32
+            conv2d(1, 32, 3, 1, 1),
+            conv2d(32, 64, 3, 2, 1),  # 8,128
+            conv2d(64, 128, 3, 2, 1),  # 4,64
+            conv2d(128, 256, 3, 2, 1),  # 2,32
         )
         self.audio_fc = nn.Sequential(
             Flatten(),
-            nn.Linear(256 * 4 * 32, 256),
+            nn.Linear(256 * 2 * 32, 256),
             nn.ReLU(True)
         )
 
         self.net_image = nn.Sequential(
-            conv3d(3, 64, 4, (2, 2, 2), 1, normalizer=None),
+            conv3d(3, 64, 4, (2, 2, 2), 1),
             conv3d(64, 128, 4, (2, 2, 2), 1),
             conv3d(128, 256, 4, (2, 2, 2), 1),
             conv3d(256, 512, 4, (1, 2, 2), 1)
         )
-        #(512,1,4,4)
+        # (512,1,4,4)
 
         self.net_joint = nn.Sequential(
             conv3d(512 + 256, 512, 3, 1, 1),
-            conv3d(512, 1, (1, 4, 4), 1, 0,
-                   activation=nn.Sigmoid, normalizer=None)
+            conv3d(512, 1, (1, 4, 4), 1, 0, activation=nn.Sigmoid, normalizer=None)
         )
 
     def forward(self, example_im, x, audio):
@@ -248,7 +248,6 @@ class Discriminator2(nn.Module):
         out = torch.cat([v, audio], 1)
         out = self.net_joint(out)
         return out.view(out.size(0))
-
 
 # a = torch.Tensor(1,3,16,64,64)
 # a = Variable(a)
