@@ -13,6 +13,8 @@ parser.add_argument('--prefix', type=str, required=True, help='real or fake')
 parser.add_argument('--output_dir', type=str, required=True)
 
 args = parser.parse_args()
+assert args.face_img is not None
+assert args.output_dir is not None
 
 face = cv2.imread(args.face_img)
 
