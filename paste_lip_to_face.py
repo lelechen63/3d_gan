@@ -28,6 +28,7 @@ for i in range(0, 938):
     assert os.path.exists(lip_path)
     lip = cv2.imread(lip_path)
     lip = cv2.resize(lip, resize)
-    mask = 255 * np.ones((resize[1], resize[0], 3), lip.dtype)
+    # mask = 255 * np.ones((resize[1], resize[0], 3), lip.dtype)
+    mask = 255 * np.ones(face.shape, face.dtype)
     output = cv2.seamlessClone(lip, face, mask, position, flags=cv2.MIXED_CLONE)
     cv2.imwrite(os.path.join(args.output_dir, basename), output)
