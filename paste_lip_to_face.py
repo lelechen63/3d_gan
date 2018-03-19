@@ -24,7 +24,8 @@ mask = 255 * np.ones((resize[1], resize[0]), np.uint8)
 assert len(lip_files) > 0
 
 for lip_f in lip_files:
-    lip = cv2.imread(os.path.join(args.lip_folder, lip_f))
+    lip = cv2.imread(lip_f)
+    basename = os.path.basename(lip_f)
     lip = cv2.resize(lip, resize)
     output = cv2.seamlessClone(lip, face, mask, position, cv2.MIXED_CLONE)
-    cv2.imwrite(os.path.join(args.output_dir, lip_f), output)
+    cv2.imwrite(os.path.join(args.output_dir, lip_f), basename)
