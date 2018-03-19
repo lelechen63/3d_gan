@@ -30,4 +30,4 @@ for lip_f in lip_files:
     basename = os.path.basename(lip_f)
     lip = cv2.resize(lip, resize)
     output = cv2.seamlessClone(lip, face, mask, position, cv2.MIXED_CLONE)
-    cv2.imwrite(os.path.join(args.output_dir, lip_f), basename)
+    cv2.imwrite(os.path.join(args.output_dir, basename), output)
