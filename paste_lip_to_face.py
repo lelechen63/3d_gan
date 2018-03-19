@@ -7,8 +7,8 @@ import os
 parser = argparse.ArgumentParser()
 parser.add_argument('--face_img', type=str, required=True)
 parser.add_argument('--lip_folder', type=str, required=True)
-parser.add_argument('--resize', nargs='+', type=int, required=True, help='e.g.: --resize 66 66')
-parser.add_argument('--position', nargs='+', type=int, requied=True, help='e.g.: --position 64 93')
+parser.add_argument('--resize', nargs='+', type=int, help='e.g.: --resize 66 66')
+parser.add_argument('--position', nargs='+', type=int, help='e.g.: --position 64 93')
 parser.add_argument('--prefix', type=str, required=True, help='real or fake')
 parser.add_argument('--output_dir', type=str, required=True)
 
