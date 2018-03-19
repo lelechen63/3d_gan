@@ -18,16 +18,16 @@ assert args.output_dir is not None
 
 face = cv2.imread(args.face_img)
 
-lip_files = glob.glob(os.path.join(args.lip_folder, args.prefix + '_*.png'))
 resize = tuple(args.resize)
 position = tuple(args.position)
 mask = 255 * np.ones((resize[1], resize[0]), np.uint8)
 
-assert len(lip_files) > 0
-
-for lip_f in lip_files:
-    lip = cv2.imread(lip_f)
-    basename = os.path.basename(lip_f)
+for i in range(0, 938):
+    basename = args.prefix + '_{}.png'.format(i)
+    lip_path = os.path.join(args.lip_folder, basename)
+    print(lip_path)
+    assert os.path.exists(lip_path)
+    lip = cv2.imread(lip_path)
     lip = cv2.resize(lip, resize)
     output = cv2.seamlessClone(lip, face, mask, position, cv2.MIXED_CLONE)
     cv2.imwrite(os.path.join(args.output_dir, basename), output)
