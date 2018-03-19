@@ -16,12 +16,12 @@ args = parser.parse_args()
 assert args.face_img is not None
 assert args.output_dir is not None
 
-face = cv2.imread(args.face_img)
 
 resize = tuple(args.resize)
 position = tuple(args.position)
 
 for i in range(0, 938):
+    face = cv2.imread(args.face_img)
     basename = args.prefix + '_{}.png'.format(i)
     lip_path = os.path.join(args.lip_folder, basename)
     print(lip_path)
