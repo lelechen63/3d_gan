@@ -20,7 +20,6 @@ face = cv2.imread(args.face_img)
 
 resize = tuple(args.resize)
 position = tuple(args.position)
-mask = 255 * np.ones((resize[1], resize[0]), np.uint8)
 
 for i in range(0, 938):
     basename = args.prefix + '_{}.png'.format(i)
@@ -29,5 +28,6 @@ for i in range(0, 938):
     assert os.path.exists(lip_path)
     lip = cv2.imread(lip_path)
     lip = cv2.resize(lip, resize)
-    output = cv2.seamlessClone(lip, face, mask, position, cv2.MIXED_CLONE)
+    mask = 255 * np.ones((resize[1], resize[0]), lip.dtype)
+    output = cv2.seamlessClone(lip, face, mask, position, cv2.NORMAL_CLONE)
     cv2.imwrite(os.path.join(args.output_dir, basename), output)
