@@ -4,20 +4,16 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import glob
 import torch
-import gauss
-
 import torchvision
 from torch.autograd import Variable
 from dataset import VaganDataset
 import scipy.misc
 from imutils import face_utils
-import numpy 
+import numpy as np
 import argparse
 import imutils
 import dlib
 import cv2
-from scipy import signal
-from scipy import ndimage
 from collections import OrderedDict
 import multiprocessing
 import math
@@ -53,7 +49,6 @@ def parse_args():
                         default=40)
     return parser.parse_args()
 
-
 ##################CPDB##############
 
 def block_process(A, block):
@@ -66,68 +61,7 @@ def block_process(A, block):
             flatten_contrast.append(block_view)
     block_contrast = np.array(flatten_contrast).reshape(block_contrast.shape)
     return block_contrast
-def ssim(img1, img2, cs_map=False):
-    """Return the Structural Similarity Map corresponding to input images img1 
-    and img2 (images are assumed to be uint8)
-    
-    This function attempts to mimic precisely the functionality of ssim.m a 
-    MATLAB provided by the author's of SSIM
-    https://ece.uwaterloo.ca/~z70wang/research/ssim/ssim_index.m
-    """
-    img1 = img1.astype(numpy.float64)
-    img2 = img2.astype(numpy.float64)
-    size = 11
-    sigma = 1.5
-    window = gauss.fspecial_gauss(size, sigma)
-    K1 = 0.01
-    K2 = 0.03
-    L = 255 #bitdepth of image
-    C1 = (K1*L)**2
-    C2 = (K2*L)**2
-    mu1 = signal.fftconvolve(window, img1, mode='valid')
-    mu2 = signal.fftconvolve(window, img2, mode='valid')
-    mu1_sq = mu1*mu1
-    mu2_sq = mu2*mu2
-    mu1_mu2 = mu1*mu2
-    sigma1_sq = signal.fftconvolve(window, img1*img1, mode='valid') - mu1_sq
-    sigma2_sq = signal.fftconvolve(window, img2*img2, mode='valid') - mu2_sq
-    sigma12 = signal.fftconvolve(window, img1*img2, mode='valid') - mu1_mu2
-    if cs_map:
-        return (((2*mu1_mu2 + C1)*(2*sigma12 + C2))/((mu1_sq + mu2_sq + C1)*
-                    (sigma1_sq + sigma2_sq + C2)), 
-                (2.0*sigma12 + C2)/(sigma1_sq + sigma2_sq + C2))
-    else:
-        return ((2*mu1_mu2 + C1)*(2*sigma12 + C2))/((mu1_sq + mu2_sq + C1)*
-                    (sigma1_sq + sigma2_sq + C2))
 
-def msssim_f(img1, img2):
-    """This function implements Multi-Scale Structural Similarity (MSSSIM) Image 
-    Quality Assessment according to Z. Wang's "Multi-scale structural similarity 
-    for image quality assessment" Invited Paper, IEEE Asilomar Conference on 
-    Signals, Systems and Computers, Nov. 2003 
-    
-    Author's MATLAB implementation:-
-    http://www.cns.nyu.edu/~lcv/ssim/msssim.zip
-    """
-    level = 5
-    weight = np.array([0.0448, 0.2856, 0.3001, 0.2363, 0.1333])
-    downsample_filter = np.ones((2, 2))/4.0
-    im1 = img1.astype(np.float64)
-    im2 = img2.astype(np.float64)
-    mssim = np.array([])
-    mcs = np.array([])
-    for l in range(level):
-        ssim_map, cs_map = ssim(im1, im2, cs_map=True)
-        mssim = np.append(mssim, ssim_map.mean())
-        mcs = np.append(mcs, cs_map.mean())
-        filtered_im1 = ndimage.filters.convolve(im1, downsample_filter, 
-                                                mode='reflect')
-        filtered_im2 = ndimage.filters.convolve(im2, downsample_filter, 
-                                                mode='reflect')
-        im1 = filtered_im1[::2, ::2]
-        im2 = filtered_im2[::2, ::2]
-    return (np.prod(mcs[0:level-1]**weight[0:level-1])*
-                    (mssim[level-1]**weight[level-1]))
 
 def cpbd_compute(image):
     if isinstance(image, str):
@@ -253,6 +187,7 @@ def matlab_sobel_edge(img):
     return np.array(b, dtype=np.int)
 ################################################################################################
 
+
 def _load(generator, directory):
     # paths = glob.glob(os.path.join(directory, "*.pth"))
     path = directory
@@ -273,6 +208,27 @@ def _load(generator, directory):
     print('Number of model parameters: {}'.format(
         sum([p.data.nelement() for p in generator.parameters()])))
     print("Load pretrained [{}]".format(path))
+
+
+
+
+
+# def _load(generator, directory):
+#     # paths = glob.glob(os.path.join(directory, "*.pth"))
+#     path = directory
+#     # print torch.load(path).keys()
+#     weight = torch.load(path)
+#     for key in torch.load(path).keys():
+#         if 'face' in key:
+#             print 'ggg'
+#             weight.pop(key, None)
+
+
+    # generator.load_state_dict(weight)
+    # print generator
+    # print('Number of model parameters: {}'.format(
+    #     sum([p.data.nelement() for p in generator.parameters()])))
+    # print("Load pretrained [{}]".format(path))
 
 
 
@@ -298,8 +254,7 @@ def _sample( config):
 
 
     paths = []
-    # print type(dataset)
-    # dataset = dataset[0:10]
+   
     stage1_generator = Generator()
     _load(stage1_generator,config.model_dir)
     examples, ims, landmarks, embeds, captions = [], [], [],[],[]
@@ -311,12 +266,13 @@ def _sample( config):
         captions.append(caption)
         landmarks.append(landmark)
     examples = torch.stack(examples,0)
-    # landmarks = torch.stack(landmarks,0)
     ims    = torch.stack(ims, 0)
     embeds = torch.stack(embeds, 0)
+    noise  = Variable(torch.randn(num_test,  100))
 
     if config.cuda:
         examples= Variable( examples).cuda()
+        noise = noise.cuda()
         # landmarks = Variable( landmarks).cuda()
         embeds = Variable(embeds).cuda()
         stage1_generator = stage1_generator.cuda()
@@ -324,39 +280,23 @@ def _sample( config):
         examples =Variable(examples)
         embeds = Variable(embeds)
         landmarks = Variable(landmarks)
-    # embeds = embeds.view(embeds.size()[0],embeds.size()[1],embeds.size()[2],embeds.size()[3])
-    # print embeds.size()
-    # print '-------'
-    # # embeds = embeds.view(len(indices), -1)
-    # print embeds.size()
+   
     batch_size = config.batch_size
     for i in range(num_test/batch_size):
         example = examples[i*batch_size:  i*batch_size + batch_size]
-        # landmark = landmarks[i*batch_size:  i*batch_size + batch_size]
+        _noise = noise[i * batch_size: i*batch_size + batch_size]
         embed = embeds[i * batch_size : i * batch_size +batch_size]
 
         print '---------------------' + str(i) + '/' + str(num_test/batch_size)
-        fake_ims_stage1 = stage1_generator(example, embed)
-        # fake_ims_stage1 = stage1_generator(example, embed)
+        fake_ims_stage1 = stage1_generator(example,_noise, embed)
 
-        # print fake_ims_stage1
-        # fake_ims_stage1 = fake_ims_stage1.view(len(dataset)*16,3,64,64)
-        # ims = ims.view(len(dataset),3,64,64)
+        
         for inx in range(batch_size):
             real_ims = ims[inx + i * batch_size]
-            # real_ims = real_ims.permute(1,2, 3, 0)
             fake_ims = fake_ims_stage1[inx]
-            # fake_ims = fake_ims.permute(1,2,3,0)
             real_ims = real_ims.cpu().permute(1,2,3,0).numpy()
-            # print fake_ims
-            # print fake_ims.size()
-            # print fake_ims.data.cpu()
-            # print type(fake_ims.data.cpu())
-            # print  fake_ims.data.cpu().size()
             fake_ims =fake_ims.data.cpu().permute(1,2,3,0).numpy()
-            # print '------'
-            # print real_ims.shape
-            # print fake_ims.shape
+           
             fff={}
             rp = []
             fp =[]
@@ -364,9 +304,7 @@ def _sample( config):
               
                 real = real_ims[j]
                 fake= fake_ims[j]
-                # real = real_ims[:,i,:,:].cpu().permute(2,3,0).numpy()
-                # fake = fake_ims[:,i,:,:].data.cpu().permute(2,3,0).numpy()
-                # print captions[inx][i]
+              
                 temp = captions[ inx+ i  * batch_size][j].split('/')
                 if not os.path.exists(os.path.join(fake_path,temp[-2])):
                     os.mkdir(os.path.join(fake_path,temp[-2]))
@@ -399,7 +337,6 @@ def generating_landmark_lips(test_inf):
     image = cv2.imread(os.path.join(config.sample_dir,'bg.jpg'))
     image_real = image.copy()
     image_fake = image.copy()
-    # original = np.array([181,237])
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor('/mnt/disk1/dat/lchen63/grid/data/shape_predictor_68_face_landmarks.dat')
 
@@ -409,7 +346,7 @@ def generating_landmark_lips(test_inf):
         # print len(real_paths)
         for i in range(len(real_paths)):
             rp = real_paths[i]
-            print rp
+            # print rp
             fp = fake_paths[i]
             # print fp
             temp_r = rp.split('/')
@@ -508,7 +445,7 @@ def compare_landmarks(path):
                 fps.append(fake_path + '/' + name.split('_')[0] + '/' + name)
     dis_txt = open(path + 'distance.txt','w')
     distances = []
-    # print len(rps)
+    print len(rps)
     for inx in range(len(rps)):
         rp = np.load(rps[inx])
         fp = np.load(fps[inx])
@@ -517,8 +454,7 @@ def compare_landmarks(path):
         dis = (rp-fp)**2
         dis = np.sum(dis,axis=1)
         dis = np.sqrt(dis)
-        print dis
-
+        # print dis
         dis = np.sum(dis,axis=0)
         distances.append(dis)
         dis_txt.write(rps[inx] + '\t' + str(dis) + '\n') 
@@ -532,14 +468,11 @@ def psnr_f(img1, img2):
     PIXEL_MAX = 255.0
     return 20 * math.log10(PIXEL_MAX / math.sqrt(mse))
 
-
-
 def compare_ssim(pickle_path):
     test_inf = pickle.load(open(pickle_path, "rb"))
     print test_inf[0]
     dis_txt = open(config.sample_dir + 'ssim.txt','w')
     ssims = []
-    # msssims = []
     psnrs =[]
     for i,d in enumerate(test_inf):
         fake_paths = d['fake_path']
@@ -552,21 +485,18 @@ def compare_ssim(pickle_path):
 
             ssim = ssim_f(f_i,r_i)
             psnr = psnr_f(f_i,r_i)
-            # msssim = msssim_f(f_i,r_i)
 
 
             psnrs.append(psnr)
             ssims.append(ssim)
-            print "ssim: {:.4f},\t psnr: {:.4f}\t msssim: {:.4f}".format( ssim, psnr,ssim)
+            print "ssim: {:.4f},\t psnr: {:.4f}".format( ssim, psnr)
 
 
-            dis_txt.write(fake_paths[inx] + "\t ssim: {:.4f},\t psnr: {:.4f}\t msssim: {:.4f}".format( ssim, psnr,ssim) + '\n') 
+            dis_txt.write(fake_paths[inx] + '\t {:.4f} \t {:.4f}'.format( ssim, psnr) + '\n') 
     average_ssim = sum(ssims) / len(ssims)
     average_psnr = sum(psnrs) / len(psnrs)
-    # average_msssim = sum(msssims) / len(msssims)
-    print "Aeverage: \t ssim: {:.4f},\t psnr: {:.4f}".format( average_ssim, average_psnr,average_ssim)
-    return  average_ssim, average_psnr
-
+    print "------ssim: {:.4f},\t psnr: {:.4f}".format( average_ssim, average_psnr)
+    return average_psnr,average_ssim
 def compare_cpdb(pickle_path):
     test_inf = pickle.load(open(pickle_path, "rb"))
     print test_inf[0]
@@ -575,29 +505,28 @@ def compare_cpdb(pickle_path):
     f_cpdb = []
     for i,d in enumerate(test_inf):
         fake_paths = d['fake_path']
-        # real_paths = d['real_path']
+        real_paths = d['real_path']
         for inx in range(len(fake_paths)):
-            # real_cpdb = cpbd_compute(real_paths[inx])
+            real_cpdb = cpbd_compute(real_paths[inx])
             fake_cpdb = cpbd_compute(fake_paths[inx])
-            # r_cpdb.append(real_cpdb)
+            r_cpdb.append(real_cpdb)
             f_cpdb.append(fake_cpdb)
-            print "fake: {:.4f}".format(  fake_cpdb)
+            print "real: {:.4f},\t fake: {:.4f}".format( real_cpdb, fake_cpdb)
 
-            dis_txt.write(fake_paths[inx] + '\t fake: {:.4f}'.format(  fake_cpdb) + '\n') 
-    # average_r = sum(r_cpdb) / len(r_cpdb)
+            dis_txt.write(fake_paths[inx] + '\t real: {:.4f} \t fake: {:.4f}'.format( real_cpdb, fake_cpdb) + '\n') 
+    average_r = sum(r_cpdb) / len(r_cpdb)
     average_f = sum(f_cpdb) / len(f_cpdb)
-    print "Aeverage: \t fake: {:.4f}".format(  average_f)
-    return average_f
+    print "Aeverage: \t real: {:.4f},\t fake: {:.4f}".format( average_r, average_f)
+
 def main(config):
     # _sample( config)
     p = os.path.join( config.sample_dir , 'image/test_result.pkl')
-    average_ssim, average_psnr = compare_ssim(p)
+    # a,b = compare_ssim(p)
     # generate_landmarks(p)
-    # average_f = compare_cpdb(p)
     # compare_landmarks(os.path.join(config.sample_dir ,'landmark/'))
-    # print "Aeverage: \t fake: {:.4f}".format(  average_f)
-    # print "Aeverage: \t ssim: {:.4f},\t psnr: {:.4f}".format( average_ssim, average_psnr)
+    # print "-------ssim: {:.4f},\t psnr: {:.4f}".format( b, a)
+    compare_cpdb(p)
 if __name__ == "__main__":
     config = parse_args()
-    from model_warp import Generator  
+    from model_vgan import Generator  
     main(config)

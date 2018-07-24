@@ -4,8 +4,6 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import glob
 import torch
-import gauss
-
 import torchvision
 from torch.autograd import Variable
 from dataset import VaganDataset
@@ -16,13 +14,12 @@ import argparse
 import imutils
 import dlib
 import cv2
-from scipy import signal
-from scipy import ndimage
 from collections import OrderedDict
 import multiprocessing
 import math
 from scipy.ndimage import gaussian_filter
-
+from scipy import signal
+from scipy import ndimage
 from numpy.lib.stride_tricks import as_strided as ast
 from skimage.measure import compare_ssim as ssim_f
 from PIL import Image
@@ -66,68 +63,7 @@ def block_process(A, block):
             flatten_contrast.append(block_view)
     block_contrast = np.array(flatten_contrast).reshape(block_contrast.shape)
     return block_contrast
-def ssim(img1, img2, cs_map=False):
-    """Return the Structural Similarity Map corresponding to input images img1 
-    and img2 (images are assumed to be uint8)
-    
-    This function attempts to mimic precisely the functionality of ssim.m a 
-    MATLAB provided by the author's of SSIM
-    https://ece.uwaterloo.ca/~z70wang/research/ssim/ssim_index.m
-    """
-    img1 = img1.astype(numpy.float64)
-    img2 = img2.astype(numpy.float64)
-    size = 11
-    sigma = 1.5
-    window = gauss.fspecial_gauss(size, sigma)
-    K1 = 0.01
-    K2 = 0.03
-    L = 255 #bitdepth of image
-    C1 = (K1*L)**2
-    C2 = (K2*L)**2
-    mu1 = signal.fftconvolve(window, img1, mode='valid')
-    mu2 = signal.fftconvolve(window, img2, mode='valid')
-    mu1_sq = mu1*mu1
-    mu2_sq = mu2*mu2
-    mu1_mu2 = mu1*mu2
-    sigma1_sq = signal.fftconvolve(window, img1*img1, mode='valid') - mu1_sq
-    sigma2_sq = signal.fftconvolve(window, img2*img2, mode='valid') - mu2_sq
-    sigma12 = signal.fftconvolve(window, img1*img2, mode='valid') - mu1_mu2
-    if cs_map:
-        return (((2*mu1_mu2 + C1)*(2*sigma12 + C2))/((mu1_sq + mu2_sq + C1)*
-                    (sigma1_sq + sigma2_sq + C2)), 
-                (2.0*sigma12 + C2)/(sigma1_sq + sigma2_sq + C2))
-    else:
-        return ((2*mu1_mu2 + C1)*(2*sigma12 + C2))/((mu1_sq + mu2_sq + C1)*
-                    (sigma1_sq + sigma2_sq + C2))
 
-def msssim_f(img1, img2):
-    """This function implements Multi-Scale Structural Similarity (MSSSIM) Image 
-    Quality Assessment according to Z. Wang's "Multi-scale structural similarity 
-    for image quality assessment" Invited Paper, IEEE Asilomar Conference on 
-    Signals, Systems and Computers, Nov. 2003 
-    
-    Author's MATLAB implementation:-
-    http://www.cns.nyu.edu/~lcv/ssim/msssim.zip
-    """
-    level = 5
-    weight = np.array([0.0448, 0.2856, 0.3001, 0.2363, 0.1333])
-    downsample_filter = np.ones((2, 2))/4.0
-    im1 = img1.astype(np.float64)
-    im2 = img2.astype(np.float64)
-    mssim = np.array([])
-    mcs = np.array([])
-    for l in range(level):
-        ssim_map, cs_map = ssim(im1, im2, cs_map=True)
-        mssim = np.append(mssim, ssim_map.mean())
-        mcs = np.append(mcs, cs_map.mean())
-        filtered_im1 = ndimage.filters.convolve(im1, downsample_filter, 
-                                                mode='reflect')
-        filtered_im2 = ndimage.filters.convolve(im2, downsample_filter, 
-                                                mode='reflect')
-        im1 = filtered_im1[::2, ::2]
-        im2 = filtered_im2[::2, ::2]
-    return (np.prod(mcs[0:level-1]**weight[0:level-1])*
-                    (mssim[level-1]**weight[level-1]))
 
 def cpbd_compute(image):
     if isinstance(image, str):
@@ -252,6 +188,69 @@ def matlab_sobel_edge(img):
     b = b > 4.0
     return np.array(b, dtype=np.int)
 ################################################################################################
+def ssim(img1, img2, cs_map=False):
+    """Return the Structural Similarity Map corresponding to input images img1 
+    and img2 (images are assumed to be uint8)
+    
+    This function attempts to mimic precisely the functionality of ssim.m a 
+    MATLAB provided by the author's of SSIM
+    https://ece.uwaterloo.ca/~z70wang/research/ssim/ssim_index.m
+    """
+    img1 = img1.astype(numpy.float64)
+    img2 = img2.astype(numpy.float64)
+    size = 11
+    sigma = 1.5
+    window = gauss.fspecial_gauss(size, sigma)
+    K1 = 0.01
+    K2 = 0.03
+    L = 255 #bitdepth of image
+    C1 = (K1*L)**2
+    C2 = (K2*L)**2
+    mu1 = signal.fftconvolve(window, img1, mode='valid')
+    mu2 = signal.fftconvolve(window, img2, mode='valid')
+    mu1_sq = mu1*mu1
+    mu2_sq = mu2*mu2
+    mu1_mu2 = mu1*mu2
+    sigma1_sq = signal.fftconvolve(window, img1*img1, mode='valid') - mu1_sq
+    sigma2_sq = signal.fftconvolve(window, img2*img2, mode='valid') - mu2_sq
+    sigma12 = signal.fftconvolve(window, img1*img2, mode='valid') - mu1_mu2
+    if cs_map:
+        return (((2*mu1_mu2 + C1)*(2*sigma12 + C2))/((mu1_sq + mu2_sq + C1)*
+                    (sigma1_sq + sigma2_sq + C2)), 
+                (2.0*sigma12 + C2)/(sigma1_sq + sigma2_sq + C2))
+    else:
+        return ((2*mu1_mu2 + C1)*(2*sigma12 + C2))/((mu1_sq + mu2_sq + C1)*
+                    (sigma1_sq + sigma2_sq + C2))
+
+def msssim_f(img1, img2):
+    """This function implements Multi-Scale Structural Similarity (MSSSIM) Image 
+    Quality Assessment according to Z. Wang's "Multi-scale structural similarity 
+    for image quality assessment" Invited Paper, IEEE Asilomar Conference on 
+    Signals, Systems and Computers, Nov. 2003 
+    
+    Author's MATLAB implementation:-
+    http://www.cns.nyu.edu/~lcv/ssim/msssim.zip
+    """
+    level = 5
+    weight = np.array([0.0448, 0.2856, 0.3001, 0.2363, 0.1333])
+    downsample_filter = np.ones((2, 2))/4.0
+    im1 = img1.astype(np.float64)
+    im2 = img2.astype(np.float64)
+    mssim = np.array([])
+    mcs = np.array([])
+    for l in range(level):
+        ssim_map, cs_map = ssim(im1, im2, cs_map=True)
+        mssim = np.append(mssim, ssim_map.mean())
+        mcs = np.append(mcs, cs_map.mean())
+        filtered_im1 = ndimage.filters.convolve(im1, downsample_filter, 
+                                                mode='reflect')
+        filtered_im2 = ndimage.filters.convolve(im2, downsample_filter, 
+                                                mode='reflect')
+        im1 = filtered_im1[::2, ::2]
+        im2 = filtered_im2[::2, ::2]
+    return (np.prod(mcs[0:level-1]**weight[0:level-1])*
+                    (mssim[level-1]**weight[level-1]))
+
 
 def _load(generator, directory):
     # paths = glob.glob(os.path.join(directory, "*.pth"))
@@ -259,16 +258,16 @@ def _load(generator, directory):
     print generator
     print path
 
-    state_dict = torch.load(path)
-    new_state_dict = OrderedDict()
-    for k, v in state_dict.items():
-        name = k[7:] 
-        new_state_dict[name] = v
-    # load params
-    generator.load_state_dict(new_state_dict)
+    # state_dict = torch.load(path)
+    # new_state_dict = OrderedDict()
+    # for k, v in state_dict.items():
+    #     name = k[7:] 
+    #     new_state_dict[name] = v
+    # # load params
+    # generator.load_state_dict(new_state_dict)
     # print torch.load(path).keys()
     # gen_path = [path for path in paths if "generator" in path][0]
-    # generator.load_state_dict(torch.load(path))
+    generator.load_state_dict(torch.load(path))
     
     print('Number of model parameters: {}'.format(
         sum([p.data.nelement() for p in generator.parameters()])))
@@ -336,7 +335,7 @@ def _sample( config):
         embed = embeds[i * batch_size : i * batch_size +batch_size]
 
         print '---------------------' + str(i) + '/' + str(num_test/batch_size)
-        fake_ims_stage1 = stage1_generator(example, embed)
+        fake_ims_stage1,_ = stage1_generator(example, embed)
         # fake_ims_stage1 = stage1_generator(example, embed)
 
         # print fake_ims_stage1
@@ -348,11 +347,11 @@ def _sample( config):
             fake_ims = fake_ims_stage1[inx]
             # fake_ims = fake_ims.permute(1,2,3,0)
             real_ims = real_ims.cpu().permute(1,2,3,0).numpy()
-            # print fake_ims
-            # print fake_ims.size()
-            # print fake_ims.data.cpu()
-            # print type(fake_ims.data.cpu())
-            # print  fake_ims.data.cpu().size()
+            print fake_ims
+            print fake_ims.size()
+            print fake_ims.data.cpu()
+            print type(fake_ims.data.cpu())
+            print  fake_ims.data.cpu().size()
             fake_ims =fake_ims.data.cpu().permute(1,2,3,0).numpy()
             # print '------'
             # print real_ims.shape
@@ -401,7 +400,7 @@ def generating_landmark_lips(test_inf):
     image_fake = image.copy()
     # original = np.array([181,237])
     detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor('/mnt/disk1/dat/lchen63/grid/data/shape_predictor_68_face_landmarks.dat')
+    predictor = dlib.shape_predictor('/mnt/disk0/dat/lchen63/grid/data/shape_predictor_68_face_landmarks.dat')
 
     for inx in range(len(test_inf)):
         real_paths = test_inf[inx]["real_path"]
@@ -532,14 +531,11 @@ def psnr_f(img1, img2):
     PIXEL_MAX = 255.0
     return 20 * math.log10(PIXEL_MAX / math.sqrt(mse))
 
-
-
 def compare_ssim(pickle_path):
     test_inf = pickle.load(open(pickle_path, "rb"))
     print test_inf[0]
     dis_txt = open(config.sample_dir + 'ssim.txt','w')
     ssims = []
-    # msssims = []
     psnrs =[]
     for i,d in enumerate(test_inf):
         fake_paths = d['fake_path']
@@ -552,7 +548,6 @@ def compare_ssim(pickle_path):
 
             ssim = ssim_f(f_i,r_i)
             psnr = psnr_f(f_i,r_i)
-            # msssim = msssim_f(f_i,r_i)
 
 
             psnrs.append(psnr)
@@ -591,13 +586,13 @@ def compare_cpdb(pickle_path):
 def main(config):
     # _sample( config)
     p = os.path.join( config.sample_dir , 'image/test_result.pkl')
-    average_ssim, average_psnr = compare_ssim(p)
+    # average_ssim, average_psnr = compare_ssim(p)
     # generate_landmarks(p)
-    # average_f = compare_cpdb(p)
+    average_f = compare_cpdb(p)
     # compare_landmarks(os.path.join(config.sample_dir ,'landmark/'))
     # print "Aeverage: \t fake: {:.4f}".format(  average_f)
     # print "Aeverage: \t ssim: {:.4f},\t psnr: {:.4f}".format( average_ssim, average_psnr)
 if __name__ == "__main__":
     config = parse_args()
-    from model_warp import Generator  
+    from model_corr import Generator  
     main(config)

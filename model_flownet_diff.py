@@ -2,14 +2,15 @@ import torch
 import torch.nn as nn
 from pts3d import *
 from ops import *
+from embedding import Encoder
 import torchvision.models as models
 import functools
-from torch.autograd import Variable
 
 
 class Flatten(nn.Module):
     def forward(self, input):
         return input.view(input.size(0), -1)
+
 
 
 class Generator(nn.Module):
@@ -29,6 +30,8 @@ class Generator(nn.Module):
             nn.MaxPool2d((1,2),(1,2)),
         )
 
+
+
         if type(norm_layer) == functools.partial:
             use_bias = norm_layer.func == nn.InstanceNorm2d
         else:
@@ -40,17 +43,16 @@ class Generator(nn.Module):
                  norm_layer(ngf),
                  nn.ReLU(True)]
 
-
         n_downsampling = 2
         for i in range(n_downsampling):
-            mult = 2**i
+            mult = 2 ** i
             model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3,
                                 stride=2, padding=1, bias=use_bias),
                       norm_layer(ngf * mult * 2),
                       nn.ReLU(True)]
 
         self.image_encoder = nn.Sequential(*model)
-        
+
 
         norm_layer = nn.BatchNorm3d
         self.compress = nn.Sequential(
@@ -70,16 +72,17 @@ class Generator(nn.Module):
         for i in range(n_downsampling):
             mult = 2**(n_downsampling - i)
             model += [nn.ConvTranspose3d(ngf * mult, int(ngf * mult / 2),
-                                         kernel_size=(3,3,3), stride=(1,2,2),
-                                         padding=(1), output_padding=(0,1,1),
+                                         kernel_size=3, stride=(1,2,2),
+                                         padding=1, output_padding=(0,1,1),
                                          bias=use_bias),
                       norm_layer(int(ngf * mult / 2)),
                       nn.ReLU(True)]
-            
-        model += [nn.Conv3d(ngf, output_nc, kernel_size=7, padding=3)]
+        model += [nn.ReplicationPad3d(3)]
+        model += [nn.Conv3d(ngf, output_nc, kernel_size=7, padding=0)]
         model += [nn.Tanh()]
 
         self.generator = nn.Sequential(*model)
+
 
     def forward(self, input, audio):
         image_feature = self.image_encoder(input).unsqueeze(2).repeat(1,1,audio.size(2)/4,1,1)
@@ -89,8 +92,8 @@ class Generator(nn.Module):
         out = self.compress(new_input)
         out = self.generator(out)
 
-        return out
 
+        return out
 
 
 # Define a resnet block
@@ -103,15 +106,15 @@ class ResnetBlock(nn.Module):
         conv_block = []
         p = 0
         if padding_type == 'reflect':
-            conv_block += [nn.ReflectionPad3d(1)]
+            conv_block += [nn.ReplicationPad3d(1)]
         elif padding_type == 'replicate':
             conv_block += [nn.ReplicationPad3d(1)]
         elif padding_type == 'zero':
-            p = (0,1,1)
+            p = 1
         else:
             raise NotImplementedError('padding [%s] is not implemented' % padding_type)
 
-        conv_block += [nn.Conv3d(dim, dim, kernel_size=(1,3,3), padding=p, bias=use_bias),
+        conv_block += [nn.Conv3d(dim, dim, kernel_size=3, padding=p, bias=use_bias),
                        norm_layer(dim),
                        nn.ReLU(True)]
         if use_dropout:
@@ -119,14 +122,14 @@ class ResnetBlock(nn.Module):
 
         p = 0
         if padding_type == 'reflect':
-            conv_block += [nn.ReflectionPad2d(1)]
+            conv_block += [nn.ReplicationPad3d(1)]
         elif padding_type == 'replicate':
-            conv_block += [nn.ReplicationPad2d(1)]
+            conv_block += [nn.ReplicationPad3d(1)]
         elif padding_type == 'zero':
-            p = (0,1,1)
+            p = 1
         else:
             raise NotImplementedError('padding [%s] is not implemented' % padding_type)
-        conv_block += [nn.Conv3d(dim, dim, kernel_size=(1,3,3), padding=p, bias=use_bias),
+        conv_block += [nn.Conv3d(dim, dim, kernel_size=3, padding=p, bias=use_bias),
                        norm_layer(dim)]
 
         return nn.Sequential(*conv_block)
@@ -136,14 +139,17 @@ class ResnetBlock(nn.Module):
         return out
 
 
-# a = torch.Tensor(1,3,64,64)
-# a = Variable(a).cuda()
-# b = torch.Tensor(1,1,64,128)
-# b = Variable(b).cuda()
-# netG = Generator().cuda()
-# c = netG(a,b)
-# print c.size()
 
+def get_norm_layer(norm_type='instance'):
+    if norm_type == 'batch':
+        norm_layer = functools.partial(nn.BatchNorm3d, affine=True)
+    elif norm_type == 'instance':
+        norm_layer = functools.partial(nn.InstanceNorm3d, affine=False)
+    elif norm_type == 'none':
+        norm_layer = None
+    else:
+        raise NotImplementedError('normalization layer [%s] is not found' % norm_type)
+    return norm_layer
 
 class Discriminator(nn.Module):
     def __init__(self):
@@ -154,20 +160,23 @@ class Discriminator(nn.Module):
             conv2d(32,64,3,2,1),
             conv2d(64,128,3,1,1),
             conv2d(128,256,3,2,1)
-
-
         )
 
         self.audio_fc= nn.Sequential(
             Flatten(),
-            nn.Linear(256*16*32,256),
-            nn.ReLU(True)
+            linear(256*16*32,256),
         )
         self.net_image = nn.Sequential(
             conv3d(3, 64, 4, (2,2,2), 1, normalizer=None),
             conv3d(64, 128, 4, (2,2,2), 1),
             conv3d(128, 256, 4, (2,2,2), 1),
-            conv3d(256, 512, 4, (1,2,2), 1)
+            conv3d(256, 256, 4, (1,2,2), 1)
+        )
+        self.net_flow_diff = nn.Sequential(
+            conv3d(2, 64, 3, 2, 1, normalizer=None),
+            conv3d(64, 128, 3, (2, 1, 1), 1),
+            conv3d(128, 256, 3, 2, 1),
+            conv3d(256, 256, 3, (2, 1, 1), 1)
         )
 
         self.net_joint = nn.Sequential(
@@ -175,14 +184,14 @@ class Discriminator(nn.Module):
             conv3d(512, 1, (1,4,4), 1, 0, activation=nn.Sigmoid, normalizer=None)
         )
 
-    def forward(self, x, audio):
-        x = self.net_image(x)
+    def forward(self, imgs, flows, audio):
+        diff = self.net_flow_diff(flows)
+        imgs = self.net_image(imgs)
         audio = self.cnn_extractor(audio)
         audio = self.audio_fc(audio)
         audio = audio.view(audio.size(0), audio.size(1), 1, 1, 1)
-        audio = audio.repeat(1, 1, x.size(2), x.size(3),x.size(4))
-        out = torch.cat([x, audio], 1)
+        audio = audio.repeat(1, 1, imgs.size(2), imgs.size(3), imgs.size(4))
+
+        out = torch.cat([imgs, diff, audio], 1)
         out = self.net_joint(out)
         return out.view(out.size(0))
-
-
